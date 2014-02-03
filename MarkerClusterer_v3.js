@@ -120,7 +120,10 @@ function  MarkerClusterer_v3( opts ) {
     }
   };
 
-
+  
+  this.clean_clusters = function(point_clusters) {
+    return point_clusters;
+  }
   this.order_clusters = function(point_clusters){
 
     point_clusters.sort(function(a, b){
