@@ -1,4 +1,5 @@
-icon_clustering_v3
+
+MarkerClusterer_v3
 ==================
 
-Google maps cluster icons
+Fast marker cluster based in [r-bush](https://github.com/mourner/rbush)  libray
