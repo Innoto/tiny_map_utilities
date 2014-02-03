@@ -6,6 +6,7 @@ function  MarkerClusterer_v3( opts ) {
   this.json_points = [];
   this.r_trees = [];
   this.raw_cluster_array = [];
+  this.cluster_array_tmp = [];
   this.cluster_array =  [];
   
 
@@ -76,19 +77,65 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.cluster_points = function( filter ) {
+    var first_cluster;
     that = this;
-    this.cluster_array = this.raw_cluster_array;
-    conta =0;
-    for(zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
-      $(this.cluster_array[zoomlevel]).each( function(i,e){
-        conta++;
-      }
-      );
-      console.debug(conta);
-      //console.debug(this.order_clusters( this.cluster_array[zoomlevel]));
+    this.cluster_array_tmp = this.raw_cluster_array;
+
+
+    for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+      
+      this.cluster_array=[zoomlevel] = [];
+      while(this.cluster_array_tmp[zoomlevel].length>0) {
+
+        
+          // order clusters
+          this.cluster_array_tmp[zoomlevel] = this.order_clusters(this.cluster_array_tmp[zoomlevel]);
+          
+          first_cluster = this.cluster_array_tmp[zoomlevel][0];
+
+          // push biggest tmp cluster to cluster array
+          this.cluster_array[zoomlevel].push(first_cluster);
+
+
+          // delete cluster 0 form tmp array
+          if(this.cluster_array_tmp[zoomlevel].length > 1)
+            this.cluster_array_tmp[zoomlevel].splice(1,1);
+          else
+            this.cluster_array_tmp[zoomlevel]=[];
+          
+          // deleting duplicates acording with first_cluster
+          this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], first_cluster);
+
+          //console.debug(this.cluster_array_tmp[zoomlevel].length);
+/*
+          point_clusters[zoomlevel] = create_clusters_clean( 
+                    this.point_clusters[zoomlevel]
+                    create_clusters_order(this.point_clusters[zoomlevel]),
+                    i
+                  );
+*/
+        }
+
 
     }
   };
+
+
+  this.order_clusters = function(point_clusters){
+
+    point_clusters.sort(function(a, b){
+      return b.length - a.length; // ASC -> a - b; DESC -> b - a
+    });
+
+    return point_clusters
+  }
+
+
+
+
+
+
+
 
 
 /*
@@ -98,7 +145,7 @@ function create_clusters() {
   while(x) {
 
 
-    for (var i=0; point_clusters.lenght <= i; i++) {
+    for (var i=0; point_clusters.length <= i; i++) {
 
       point_clusters[x] = create_clusters_clean( 
                 this.point_clusters[x]
@@ -160,33 +207,7 @@ this.create_clusters_clean = function( all_clusters, clusters_by_size, recursion
 */
 
 
-  this.order_clusters = function(point_clusters, n_elements){
 
-    var ord_array = [];
-    var largest_index = false;
-    var largest_value = 0;
-
-
-    //console.debug(culsters_n);
-/*
-    do {
-      largest_value = 0;
-
-      $(point_clusters ).each( function(i,e) {
-        if( $(point_clusters).lenght > largest_value ) {
-          largest_value = $(point_clusters).lenght;
-          largest_index = i;
-        }
-      });
-
-      ord_array.push(largest_index);
-      point_clusters[largest_index].remove();
-
-    } while( culsters_n != 0 );
-*/
-
-    return ord_array;
-  }
 
 
 
@@ -208,7 +229,7 @@ this.create_clusters_clean = function( all_clusters, clusters_by_size, recursion
     for (var zoomlevel = 0; zoomlevel <= maxzoom; zoomlevel++) {
 
       $(this.point_clusters[zoomlevel]).each(function(i, cluster){
-        if( $(cluster).lenght == 1 ) {
+        if( $(cluster).length == 1 ) {
 
           // parámetros por extender
           this.markers[i].zoom_minimo = zoomlevel;
