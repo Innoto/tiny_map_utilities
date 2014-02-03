@@ -77,60 +77,71 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.cluster_points = function( filter ) {
-    var first_cluster;
+    filtrado_clusters= new time_calc();
+
+
+    var biggest_cluster;
     that = this;
     this.cluster_array_tmp = this.raw_cluster_array;
 
 
     for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
       
-      this.cluster_array=[zoomlevel] = [];
-      while(this.cluster_array_tmp[zoomlevel].length>0) {
+      this.cluster_array[zoomlevel] = [];
+
+      while( this.cluster_array_tmp[zoomlevel].length != 0) {
 
         
-          // order clusters
-          this.cluster_array_tmp[zoomlevel] = this.order_clusters(this.cluster_array_tmp[zoomlevel]);
+          // get biggest cluster index
+          biggest_cluster_index= this.biggest_cluster_index(this.cluster_array_tmp[ zoomlevel ]);
           
-          first_cluster = this.cluster_array_tmp[zoomlevel][0];
+          biggest_cluster = this.cluster_array_tmp[zoomlevel][biggest_cluster_index];
 
           // push biggest tmp cluster to cluster array
-          this.cluster_array[zoomlevel].push(first_cluster);
+          this.cluster_array[zoomlevel].push(biggest_cluster);
 
 
           // delete cluster 0 form tmp array
           if(this.cluster_array_tmp[zoomlevel].length > 1)
-            this.cluster_array_tmp[zoomlevel].splice(1,1);
+            this.cluster_array_tmp[zoomlevel].splice(biggest_cluster_index,1);
           else
             this.cluster_array_tmp[zoomlevel]=[];
           
           // deleting duplicates acording with first_cluster
-          this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], first_cluster);
+          this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], biggest_cluster);
 
-          //console.debug(this.cluster_array_tmp[zoomlevel].length);
-/*
-          point_clusters[zoomlevel] = create_clusters_clean( 
-                    this.point_clusters[zoomlevel]
-                    create_clusters_order(this.point_clusters[zoomlevel]),
-                    i
-                  );
-*/
         }
 
-
     }
+    console.debug(filtrado_clusters.check());
+
   };
 
-  
-  this.clean_clusters = function(point_clusters) {
-    return point_clusters;
-  }
-  this.order_clusters = function(point_clusters){
 
-    point_clusters.sort(function(a, b){
-      return b.length - a.length; // ASC -> a - b; DESC -> b - a
+  this.clean_clusters = function(point_clusters, cluster_to_compare) {
+
+    var res_clusters = [];
+
+    $(point_clusters).each( function(i,e){
+      res_clusters.push(e);
     });
 
-    return point_clusters
+    return res_clusters;
+  }
+
+  this.biggest_cluster_index = function(point_clusters){
+    var biggest_cluster_length=0;
+    var biggest_cluster_index=0;
+
+    $(point_clusters).each(function(i,e){
+
+      if(e.length > biggest_cluster_length) {
+        biggest_cluster_index=i;
+        biggest_cluster_length = e.length;
+      }
+    });
+
+    return biggest_cluster_index;
   }
 
 
