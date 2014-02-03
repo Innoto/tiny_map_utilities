@@ -5,8 +5,8 @@
 <body>
   <h1>R Tree clustering test</h1>
   <div id="mapa" style="background-color:grey;width:100%;height:600px;"></div>
-  <div> JSON Load: <span id="carga_json"></span> ms</div>
   <div> GMAP Canvas load: <span id="gmap_load"></span> ms</div>
+  <div> JSON Load: <span id="carga_json"></span> ms</div>
   <div> R Tree creation by levels: <span id="carga_arbol"></span> ms</div>
   <div> Clustering proccess by levels: <span id="procesado_clusters"></span> ms</div>
   <div> Load on gmaps: <span id="carga_sobre_gmaps"></span> ms</div><br>
@@ -14,6 +14,7 @@
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.js"></script>
   <script type="text/javascript" src="rbush.js"></script>
+  <script type="text/javascript" src="MarkerClusterer_v3.js"></script>
   <script type="text/javascript" src="carga_puntos.js"></script>
 </body>
 </html>
