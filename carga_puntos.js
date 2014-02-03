@@ -39,6 +39,10 @@ $(document).ready(function() {
     cluster_manager.raw_cluster_points();
     $("#procesado_clusters").text( procesado_clusters.check() );
 
+    aply_filters= new time_calc();
+    cluster_manager.cluster_points();
+
+    $("#aplicar_filtros").text(  aply_filters.check());
 
     carga_sobre_gmaps= new time_calc();
     $("#carga_sobre_gmaps").text( carga_sobre_gmaps.check() );
