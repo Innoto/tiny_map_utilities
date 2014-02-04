@@ -15,7 +15,7 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [12,18],
+    zoom_range : [11,12],
     group_radious : 5, // in pixels
     map : false
   });
@@ -73,7 +73,7 @@ function  MarkerClusterer_v3( opts ) {
             group.push(ee.index);
         });
 
-        that.raw_cluster_array[zoomlevel].push(group);
+        that.raw_cluster_array[zoomlevel][i] = group;
 
       });
 
@@ -92,57 +92,47 @@ function  MarkerClusterer_v3( opts ) {
       
       this.cluster_array[zoomlevel] = [];
 
-      while( this.cluster_array_tmp[zoomlevel].length != 0) {
-        
+
+
+      for(var i=0; this.cluster_array_tmp[zoomlevel].length >= i; i++) {
+
           // get biggest cluster index
-          biggest_cluster_index= this.biggest_cluster_index(this.cluster_array_tmp[ zoomlevel ]);
+          biggest_cluster_index = this.biggest_cluster_index(this.cluster_array_tmp[ zoomlevel ]);
           
           biggest_cluster = this.cluster_array_tmp[zoomlevel][biggest_cluster_index];
 
           // push biggest tmp cluster to cluster array
-          this.cluster_array[zoomlevel].push(biggest_cluster);
+          this.cluster_array[zoomlevel][biggest_cluster_index].= biggest_cluster;
 
 
           // delete cluster 0 form tmp array
           if(this.cluster_array_tmp[zoomlevel].length > 1)
-            this.cluster_array_tmp[zoomlevel].splice(biggest_cluster_index,1);
+            this.cluster_array_tmp[zoomlevel][biggest_cluster_index] = false;
           else
             this.cluster_array_tmp[zoomlevel]=[];
           
           // deleting duplicates acording with first_cluster
           if( biggest_cluster.length > 1)
-            this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], biggest_cluster);
+            this.cluster_array_tmp[zoomlevel] = this.clean_cluster( this.cluster_array_tmp[zoomlevel][], biggest_cluster);
 
         }
 
     }
-
-
-
   };
 
 
-  this.clean_clusters = function(point_clusters, cluster_to_compare) {
+  this.clean_cluster = function(cluster, cluster_to_compare) {
 
-    var res_clusters = [];
-    var cluster = []
-    $(point_clusters).each( function(i,e){
+    var res_cluster = [];
 
-      cluster = []
+    $(cluster).each( function(i,e){
 
-      $(e).each( function(i2,e2){
-        if( $.inArray( e2, cluster_to_compare ) === -1 ) {
-          cluster.push(e2);
-        }
-      });
-
-      if(cluster.length>0) {
-        res_clusters.push(cluster);
-      }
-
+      if($.inArray(e, cluster_to_compare) === -1)
+        res_cluster.push(e);
     });
 
-    return res_clusters;
+
+    return point_cluster;
   }
 
   this.biggest_cluster_index = function(point_clusters){
@@ -151,7 +141,7 @@ function  MarkerClusterer_v3( opts ) {
 
     $(point_clusters).each(function(i,e){
 
-      if(e.length > biggest_cluster_length) {
+      if(typeof e != "undefined" && e.length > biggest_cluster_length) {
         biggest_cluster_index=i;
         biggest_cluster_length = e.length;
       }
@@ -175,15 +165,18 @@ function  MarkerClusterer_v3( opts ) {
     var marker;
     var marker_latlng;
 
-    //for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
-      //console.debug("zoom:"+zoomlevel);
+cantos_total=0;
+    for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+      cantos = 0;
+      console.debug("zoom:"+zoomlevel);
       //console.debug("elementos:"+that.cluster_array[zoomlevel].length);
-      $(that.cluster_array[17]).each(function( i,cc ){
+
+      $(that.cluster_array[zoomlevel]).each(function( i,cc ){
 
         //console.debug("subelementos:" + cc.length);
-        console.debug(cc);
 
-/*
+console.debug(cc);
+
         marker_latlng = new google.maps.LatLng( that.json_points[cc[0]].latitude, that.json_points[cc[0]].longitude );
 
         marker = new google.maps.Marker({
@@ -193,14 +186,21 @@ function  MarkerClusterer_v3( opts ) {
           visible:true
         });
 
-*/
+        cantos= cantos+cc.length;
+   
+
 
         //console.debug(    i + ' _ ' +that.json_points[cc[0]].id + ' = ' +that.json_points[cc[0]].latitude +','+ that.json_points[cc[0]].longitude     );
 
         //console.debug(that.json_points[cc[0]].latitude  );
 
       });
-    //}
+
+      console.debug(cantos);
+      cantos_total = cantos_total + cantos;
+    }
+    console.debug(cantos_total
+      );
 
 
 /*
@@ -216,7 +216,7 @@ function  MarkerClusterer_v3( opts ) {
         }
       });
     }*/
-
+      console.debug(cantos)
   }
 
 
