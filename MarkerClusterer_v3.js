@@ -11,7 +11,7 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [12,14],
+    zoom_range : [12,18],
     group_radious : 10, // in pixels
     map : false
   });
@@ -77,8 +77,6 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.cluster_points = function( filter ) {
-    filtrado_clusters= new time_calc();
-
 
     var biggest_cluster;
     that = this;
@@ -110,9 +108,14 @@ function  MarkerClusterer_v3( opts ) {
           this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], biggest_cluster);
 
         }
-
+/*
+      console.debug("outro_zoom");
+      $(this.cluster_array[zoomlevel] ).each(function(i,e){
+        console.debug(e.length);
+      });*/
     }
-    console.debug(filtrado_clusters.check());
+
+
 
   };
 
@@ -132,8 +135,10 @@ function  MarkerClusterer_v3( opts ) {
 
       });
 
-      if(cluster.length>0)
-      res_clusters.push(cluster);
+      if(cluster.length>0) {
+        res_clusters.push(cluster);
+      }
+
     });
 
     return res_clusters;
@@ -157,90 +162,6 @@ function  MarkerClusterer_v3( opts ) {
 
 
 
-
-
-
-
-
-/*
-
-function create_clusters() {
-
-  while(x) {
-
-
-    for (var i=0; point_clusters.length <= i; i++) {
-
-      point_clusters[x] = create_clusters_clean( 
-                this.point_clusters[x]
-                create_clusters_order(this.point_clusters[x]),
-                i
-              );
-
-    }
-  }
-
-
-  // xa fora do bucle de zooms
-  refresh_markers();
-
-}*/
-
-/*
-
-this.create_clusters_clean = function( all_clusters, clusters_by_size, recursion_num ) {
-  var result_array = [];
-  var current_cluster = [];
-
-  $( clusters_by_size ).each( function(i,e) {
-    
-    // fisrt (recursion_num) elements are ready
-    if( i<= recursion_num ) {
-      result_array[e] = all_clusters[e];
-      all_clusters[e].remove();
-
-      // load current node to compare with next others
-      if( i == recursion_num ) {
-        current_cluster = all_clusters[e];
-      }
-    }
-    else { // now, search for duplicates in the rest of items
-      $(current_cluster).each( function(i2,current_cluster_val) {
-        if(current_cluster_val == e){ //looking for duplicated 1st dimension keys. 
-          all_clusters[e].remove();
-        }
-        else { //looking for duplicated 2st dimension keys
-          $(all_clusters[e]).each( function(i3, iteration_cluster_2st_val){
-            if(iteration_cluster_2st_val == current_cluster_val) {
-              all_clusters[e][i3].remove();
-            }
-          });
-        }
-
-      });
-
-    }
-
-
-  });
-
-  result_array.push(all_clusters)
-
-  return result_array;
-}
-*/
-
-
-
-
-
-
-  /*
-    Establecemos de cero os markers e os clustermarkers se non existen 
-    poñendo máximo e minimo zoom permitido nos rangos e sempre invisibles
-    posteriormente e despois de cada debuxado de filtro, collemos e imos 
-    acotando por encima máis por debaixo;
-  */
   this.refresh_markers = function() {
 
     //
@@ -248,7 +169,6 @@ this.create_clusters_clean = function( all_clusters, clusters_by_size, recursion
     //  Visibilidade null para todos
     //  Reiniciar zoom mínimo a zoom máximo
     //
-
 
     for (var zoomlevel = 0; zoomlevel <= maxzoom; zoomlevel++) {
 
@@ -266,7 +186,9 @@ this.create_clusters_clean = function( all_clusters, clusters_by_size, recursion
   }
 
 
+  this.remove_markers = function() {
 
+  }
 
 
 
