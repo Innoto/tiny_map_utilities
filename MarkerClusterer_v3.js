@@ -7,7 +7,11 @@ function  MarkerClusterer_v3( opts ) {
   this.r_trees = [];
   this.raw_cluster_array = [];
   this.cluster_array_tmp = [];
-  this.cluster_array =  [];
+  this.cluster_array = [];
+
+  
+  this.markers = [];
+  this.cluster_markers = [];
   
 
   this.options = new Object({
@@ -25,6 +29,7 @@ function  MarkerClusterer_v3( opts ) {
     $( that.json_data ).each( function(i,e) {
           that.json_points[i] = e;
     });
+    
   };
 
 
@@ -43,10 +48,10 @@ function  MarkerClusterer_v3( opts ) {
       for(zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
         var scale = Math.pow(2, zoomlevel);
         pixels_latlng =  mapProjection.fromLatLngToPoint( new google.maps.LatLng(e.latitude, e.longitude) );
-        tree_row = { id: e.id, lat: parseInt(pixels_latlng.x*scale) , lng: parseInt(pixels_latlng.y*scale) };
+        tree_row = { index: i, lat: parseInt(pixels_latlng.x*scale) , lng: parseInt(pixels_latlng.y*scale) };
         that.r_trees[zoomlevel].insert( tree_row );
       }
-      //console.debug('lat:'+ parseInt(pixels_latlng.x*scale) + 'lng: '+parseInt(pixels_latlng.y*scale) );
+
     });
     
   };
@@ -65,7 +70,7 @@ function  MarkerClusterer_v3( opts ) {
 
         group = [];
         $( result ).each( function(i,ee){
-            group.push(ee.id);
+            group.push(ee.index);
         });
 
         that.raw_cluster_array[zoomlevel].push(group);
@@ -162,7 +167,7 @@ function  MarkerClusterer_v3( opts ) {
 
 
 
-  this.refresh_markers = function() {
+  this.draw_markers = function() {
 
     //
     //  Establecer zooms de novo
@@ -170,6 +175,37 @@ function  MarkerClusterer_v3( opts ) {
     //  Reiniciar zoom mínimo a zoom máximo
     //
 
+    that = this;
+    var marker;
+    var marker_latlng;
+
+    for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+      console.debug("zoom:"+zoomlevel);
+      console.debug("elementos:"+that.cluster_array[zoomlevel].length);
+      $(that.cluster_array[zoomlevel]).each(function( i,cc ){
+
+        console.debug(cc);
+
+        marker_latlng = new google.maps.LatLng( that.json_points[cc[0]].latitude, that.json_points[cc[0]].longitude );
+
+        marker = new google.maps.Marker({
+          position: marker_latlng,
+          map: that.options.map,
+          
+          visible:true
+        });
+
+
+
+        //console.debug(    i + ' _ ' +that.json_points[cc[0]].id + ' = ' +that.json_points[cc[0]].latitude +','+ that.json_points[cc[0]].longitude     );
+
+        //console.debug(that.json_points[cc[0]].latitude  );
+
+      });
+    }
+
+
+/*
     for (var zoomlevel = 0; zoomlevel <= maxzoom; zoomlevel++) {
 
       $(this.point_clusters[zoomlevel]).each(function(i, cluster){
@@ -181,7 +217,7 @@ function  MarkerClusterer_v3( opts ) {
 
         }
       });
-    }
+    }*/
 
   }
 

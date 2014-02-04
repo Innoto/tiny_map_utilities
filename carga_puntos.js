@@ -45,6 +45,7 @@ $(document).ready(function() {
     $("#aplicar_filtros").text(  aply_filters.check());
 
     carga_sobre_gmaps= new time_calc();
+    cluster_manager.draw_markers();
     $("#carga_sobre_gmaps").text( carga_sobre_gmaps.check() );
     $("#tiempo_total").text( tiempo_total.check() );
 
