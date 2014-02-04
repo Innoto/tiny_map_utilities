@@ -11,7 +11,7 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [12,17],
+    zoom_range : [12,14],
     group_radious : 10, // in pixels
     map : false
   });
@@ -90,7 +90,6 @@ function  MarkerClusterer_v3( opts ) {
       this.cluster_array[zoomlevel] = [];
 
       while( this.cluster_array_tmp[zoomlevel].length != 0) {
-
         
           // get biggest cluster index
           biggest_cluster_index= this.biggest_cluster_index(this.cluster_array_tmp[ zoomlevel ]);
@@ -121,9 +120,20 @@ function  MarkerClusterer_v3( opts ) {
   this.clean_clusters = function(point_clusters, cluster_to_compare) {
 
     var res_clusters = [];
-
+    var cluster = []
     $(point_clusters).each( function(i,e){
-      res_clusters.push(e);
+
+      cluster = []
+      $(e).each( function(i2,e2){
+        
+        if( $.inArray( e2, cluster_to_compare ) > -1) {
+          cluster.push(e2);
+        }
+
+      });
+
+      if(cluster.length>0)
+      res_clusters.push(cluster);
     });
 
     return res_clusters;
