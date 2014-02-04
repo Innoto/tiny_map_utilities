@@ -16,7 +16,7 @@ function  MarkerClusterer_v3( opts ) {
 
   this.options = new Object({
     zoom_range : [12,18],
-    group_radious : 10, // in pixels
+    group_radious : 5, // in pixels
     map : false
   });
   $.extend(true, this.options, opts);
@@ -110,14 +110,11 @@ function  MarkerClusterer_v3( opts ) {
             this.cluster_array_tmp[zoomlevel]=[];
           
           // deleting duplicates acording with first_cluster
-          this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], biggest_cluster);
+          if( biggest_cluster.length > 1)
+            this.cluster_array_tmp[zoomlevel] = this.clean_clusters(this.cluster_array_tmp[zoomlevel], biggest_cluster);
 
         }
-/*
-      console.debug("outro_zoom");
-      $(this.cluster_array[zoomlevel] ).each(function(i,e){
-        console.debug(e.length);
-      });*/
+
     }
 
 
@@ -132,12 +129,11 @@ function  MarkerClusterer_v3( opts ) {
     $(point_clusters).each( function(i,e){
 
       cluster = []
+
       $(e).each( function(i2,e2){
-        
-        if( $.inArray( e2, cluster_to_compare ) > -1) {
+        if( $.inArray( e2, cluster_to_compare ) === -1 ) {
           cluster.push(e2);
         }
-
       });
 
       if(cluster.length>0) {
@@ -179,13 +175,15 @@ function  MarkerClusterer_v3( opts ) {
     var marker;
     var marker_latlng;
 
-    for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
-      console.debug("zoom:"+zoomlevel);
-      console.debug("elementos:"+that.cluster_array[zoomlevel].length);
-      $(that.cluster_array[zoomlevel]).each(function( i,cc ){
+    //for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+      //console.debug("zoom:"+zoomlevel);
+      //console.debug("elementos:"+that.cluster_array[zoomlevel].length);
+      $(that.cluster_array[17]).each(function( i,cc ){
 
+        //console.debug("subelementos:" + cc.length);
         console.debug(cc);
 
+/*
         marker_latlng = new google.maps.LatLng( that.json_points[cc[0]].latitude, that.json_points[cc[0]].longitude );
 
         marker = new google.maps.Marker({
@@ -195,14 +193,14 @@ function  MarkerClusterer_v3( opts ) {
           visible:true
         });
 
-
+*/
 
         //console.debug(    i + ' _ ' +that.json_points[cc[0]].id + ' = ' +that.json_points[cc[0]].latitude +','+ that.json_points[cc[0]].longitude     );
 
         //console.debug(that.json_points[cc[0]].latitude  );
 
       });
-    }
+    //}
 
 
 /*
