@@ -1,4 +1,4 @@
-
+cd=console.debug;
 
 function  MarkerClusterer_v3( opts ) {
   that = this;
@@ -17,7 +17,7 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [9,18],
+    zoom_range : [12,18],
     group_radious : 5, // in pixels
     map : false
   });
@@ -94,7 +94,7 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.cluster_points = function( filter ) {
-    var  bc_index;
+    var  bc;
     that = this;
 
 
@@ -103,21 +103,17 @@ function  MarkerClusterer_v3( opts ) {
 
       // clone arrays
       this.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
-      this.cluster_array_keys[zoomlevel] = $.merge( [],this.raw_cluster_array_keys[zoomlevel] );
       this.cluster_array_tmp_keys[zoomlevel] = $.merge( [],this.raw_cluster_array_keys[zoomlevel] );
-
+      this.cluster_array_keys[zoomlevel] = [];
 
       while(this.cluster_array_tmp_keys[zoomlevel].length > 0){
 
-        bc_index = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
+        bc = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
 
-        this.cluster_array_tmp_keys[zoomlevel].splice($.inArray(bc_index, this.cluster_array_tmp_keys[zoomlevel]));
+        this.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
+        this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc.index] );
 
-        this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc_index]);
-
-
-        console.debug( this.cluster_array_keys[zoomlevel] );
-
+        cd( this.cluster_array_tmp_keys[zoomlevel].length);
       }
 
 
@@ -128,42 +124,49 @@ function  MarkerClusterer_v3( opts ) {
   this.clean_clusters = function(zoom, cluster_to_compare) {
     that = this;
 
-    $(that.cluster_array_tmp_keys[zoom]).each(function(i,e){
+    $(that.cluster_array_tmp_keys[zoom]).each(function(i,e) {
 
-
+      if( that.cluster_array[zoom][e].length == 0 ||  $.inArray(e, cluster_to_compare) !== -1 ){
+        that.cluster_array_tmp_keys[zoom].splice(i,1);
+      }
+      else {
         var group = [];
-
         $(that.cluster_array[zoom][e]).each(function(i2,e2){ 
-
-          if( $.inArray(e2, cluster_to_compare)  === -1) {
+          if( $.inArray(e2, cluster_to_compare)  !== -1) {
             group.push(e2);
           }
-
         });
 
-        if(group.length != 0){
-          that.cluster_array[zoom][i] =  group;
+        if(group.length!=0){
+          that.cluster_array[zoom][e] = group;
+          that.cluster_array_keys[zoom].push(e);
         }
+        else {
+          that.cluster_array_tmp_keys[zoom].splice(i,1);
+        }   
 
-
-   
+      }
 
     });
+
+
 
   }
 
   this.biggest_cluster_index = function(point_cluster_tmp_keys, point_cluster_array){
     var biggest_cluster_length=0;
     var b_c_i=0;
+    var b_c_k=0;
 
     $(point_cluster_tmp_keys).each(function(i,e){
       if(point_cluster_array[e].length > biggest_cluster_length) {
         b_c_i=e;
+        b_c_k=i;
         biggest_cluster_length = point_cluster_array[e].length;
       }
     });
 
-    return b_c_i;
+    return {index: b_c_i, key_index: b_c_k};
   }
 
 
