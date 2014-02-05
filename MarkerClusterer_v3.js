@@ -17,8 +17,8 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [12,18],
-    group_radious : 5, // in pixels
+    zoom_range : [10,18],
+    group_radious : 30, // in pixels
     map : false
   });
   $.extend(true, this.options, opts);
@@ -98,7 +98,6 @@ function  MarkerClusterer_v3( opts ) {
     that = this;
 
 
-
     for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
 
       // clone arrays
@@ -111,10 +110,12 @@ function  MarkerClusterer_v3( opts ) {
         bc = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
 
         this.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
+        that.cluster_array_keys[zoomlevel].push(bc.index);
         this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc.index] );
 
-        cd( this.cluster_array_tmp_keys[zoomlevel].length);
+
       }
+
 
 
     }
@@ -132,14 +133,13 @@ function  MarkerClusterer_v3( opts ) {
       else {
         var group = [];
         $(that.cluster_array[zoom][e]).each(function(i2,e2){ 
-          if( $.inArray(e2, cluster_to_compare)  !== -1) {
+          if( $.inArray(e2, cluster_to_compare) === -1) {
             group.push(e2);
           }
         });
 
         if(group.length!=0){
           that.cluster_array[zoom][e] = group;
-          that.cluster_array_keys[zoom].push(e);
         }
         else {
           that.cluster_array_tmp_keys[zoom].splice(i,1);
@@ -171,11 +171,26 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.draw_markers = function() {
+    that=this;
+    var zoomlevel = 10;
 
-    var zoomlevel = this.options.map.getZoom();
+    console.debug(this.cluster_array_keys[zoomlevel].length)
+    $(this.cluster_array_keys[zoomlevel]).each(function( i,cc ){
 
+      //console.debug(that.cluster_array[zoomlevel][cc]);
+      marker_latlng = new google.maps.LatLng( that.json_points[cc].latitude, that.json_points[cc].longitude );
 
+      marker = new google.maps.Marker({
+
+      position: marker_latlng,
+      map: that.options.map,
+      visible:true
+      });
+    });
   }
+
+
+
 
 
 }
