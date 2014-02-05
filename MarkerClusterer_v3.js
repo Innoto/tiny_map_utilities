@@ -109,19 +109,11 @@ function  MarkerClusterer_v3( opts ) {
 
       while(this.cluster_array_tmp_keys[zoomlevel].length > 0){
 
+        bc_index = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
 
-        this.cluster_array_tmp_keys[zoomlevel].splice(3,1);
+        this.cluster_array_tmp_keys[zoomlevel].splice($.inArray(bc_index, this.cluster_array_tmp_keys[zoomlevel]));
 
-        this.cluster_array_tmp_keys[zoomlevel] =[];
-        //bc_index = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
-
-        //this.cluster_array_tmp_keys[zoomlevel].splice($.inArray(bc_index, this.cluster_array_tmp_keys[zoomlevel]));
-        
-  
-
-        //this.cluster_array_keys[zoomlevel].splice($.inArray(bc_index, this.cluster_array_keys[zoomlevel]));
-        
-        //this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc_index]);
+        this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc_index]);
 
 
         console.debug( this.cluster_array_keys[zoomlevel] );
