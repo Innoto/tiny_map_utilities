@@ -5,11 +5,16 @@ function  MarkerClusterer_v3( opts ) {
   this.json_data = false;
   this.json_points = [];
   this.r_trees = [];
+
   this.raw_cluster_array_keys = [];
   this.raw_cluster_array = [];
+
   this.cluster_array_keys = [];
   this.cluster_array_tmp_keys = [];
   this.cluster_array = [];
+
+  this.markers = [];
+  this.cluster_markers = [];
 
   
   this.markers = [];
@@ -94,6 +99,9 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.cluster_points = function( filter ) {
+    
+    aply_filters= new time_calc();
+    
     var  bc;
     that = this;
 
@@ -118,21 +126,24 @@ function  MarkerClusterer_v3( opts ) {
 
 
     }
-    //console.debug(comparacion);
+
+    $("#aplicar_filtros").text(  aply_filters.check());
+
   }
 
 
-comparacion = 0;
+
 
   this.clean_clusters = function(zoom, cluster_to_compare) {
     that = this;
     var e;
+    var group=[];
 
     for(var i=0 ; that.cluster_array_tmp_keys[zoom].length>i ; i++) {
         
       e = that.cluster_array_tmp_keys[zoom][i];
 
-      if( $.inArray(e, cluster_to_compare) !== -1)
+      if( $.inArray(e, cluster_to_compare) !== -1 )
       {
         that.cluster_array_tmp_keys[zoom][i] = -1;
       }
@@ -140,15 +151,15 @@ comparacion = 0;
       {  
         group = [];
         jQuery.grep(that.cluster_array[zoom][e], function(el) {
-                if (jQuery.inArray(el, cluster_to_compare) == -1) group.push(el);
+            if ($.inArray(el, cluster_to_compare) == -1) group.push(el);
         });
 
-        if(group.length!=0){
+        if(group.length != 0){
           that.cluster_array[zoom][e] = group;
         }
         else {
           that.cluster_array_tmp_keys[zoom][i] = -1;
-        }   
+        }
       }
 
     }
@@ -163,7 +174,18 @@ comparacion = 0;
 
   }
 
-tot=0;
+
+  this.inArray = function(n, data){
+      var i = 0, len = data.length;
+      while (i < len) {
+        if(data[i] === n) return i;
+        i++;
+      }
+      return -1;
+  }
+
+
+
 
   this.biggest_cluster_index = function(point_cluster_tmp_keys, point_cluster_array){
     var biggest_cluster_length=0;
@@ -183,11 +205,25 @@ tot=0;
   }
 
 
+  //
+  //  Markers methods
+  //
+
+
+  this.add_marker = function() {
+
+  }
+
+  this.add_cluster_marker = function() {
+
+  }
+
+
   this.draw_markers = function() {
     that=this;
     var zoomlevel = 12;
 
-    console.debug("Numero de comparacions: "+ comparacion);
+    tot=0;
     console.debug("representados: "+ this.cluster_array_keys[zoomlevel].length);
     $(this.cluster_array_keys[zoomlevel]).each(function( i,cc ){
 
