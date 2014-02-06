@@ -16,13 +16,9 @@ function  MarkerClusterer_v3( opts ) {
   this.markers = [];
   this.cluster_markers = [];
 
-  
-  this.markers = [];
-  this.cluster_markers = [];
-  
 
   this.options = new Object({
-    zoom_range : [10,15],
+    zoom_range : [11,15],
     group_radious : 10, // in pixels
     map : false
   });
@@ -35,6 +31,8 @@ function  MarkerClusterer_v3( opts ) {
     that.json_data = json_data;
     $( that.json_data ).each( function(i,e) {
           that.json_points[i] = e;
+          that.add_marker(i);
+          that.add_cluster_marker(i);
     });
   };
 
@@ -210,40 +208,59 @@ function  MarkerClusterer_v3( opts ) {
   //
 
 
-  this.add_marker = function() {
+  this.add_marker = function( marker_id ) {
 
-  }
-
-  this.add_cluster_marker = function() {
-
-  }
-
-
-  this.draw_markers = function() {
-    that=this;
-    var zoomlevel = 12;
-
-    tot=0;
-    console.debug("representados: "+ this.cluster_array_keys[zoomlevel].length);
-    $(this.cluster_array_keys[zoomlevel]).each(function( i,cc ){
-
-      //console.debug(that.cluster_array[zoomlevel][cc]);
-      marker_latlng = new google.maps.LatLng( that.json_points[cc].latitude, that.json_points[cc].longitude );
+    var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
       
-
-      //console.debug(cc+ ": "+that.cluster_array[zoomlevel][cc].length);
-      
-      tot += that.cluster_array[zoomlevel][cc].length;
-      
-      marker = new google.maps.Marker({
-        title: $(cc).toString(),
-        position: marker_latlng,
-        map: that.options.map,
-        visible:true
-      });
+    var marker = new google.maps.Marker({
+      position: marker_latlng,
+      map: this.options.map,
+      visible:false
     });
 
-    console.debug("Totales agregados: "+ tot);
+    this.markers[marker_id] = marker;
+  }
+
+  this.add_cluster_marker = function(marker_id) {
+
+    var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
+      
+    var marker = new google.maps.Marker({
+      position: marker_latlng,
+      map: this.options.map,
+      visible:false
+    });
+
+    this.cluster_markers[marker_id] = marker;
+  }
+
+
+  this.show_markers_zoom = function() {
+    that=this;
+    var zoomlevel = cluster_manager.options.map.getZoom();
+    
+    if(zoomlevel > this.options.zoom_range[1])  
+      zoomlevel = this.options.zoom_range[1];
+    else
+    if(zoomlevel < this.options.zoom_range[0])  
+      zoomlevel = this.options.zoom_range[0];
+
+
+    // hide all markers
+    $(this.markers).each( function(i, e) {
+      e.setVisible(false);
+    });
+
+    $(this.cluster_markers).each( function(i, e) {
+      e.setVisible(false);
+    });
+
+
+    $(this.cluster_array_keys[zoomlevel]).each( function(i, e) {
+      that.markers[e].setVisible(true);
+    });
+
+
   }
 
 

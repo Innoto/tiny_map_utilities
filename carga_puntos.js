@@ -45,12 +45,16 @@ $(document).ready(function() {
     $("#aplicar_filtros").text(  aply_filters.check());
 
     carga_sobre_gmaps= new time_calc();
-    cluster_manager.draw_markers();
+    cluster_manager.show_markers_zoom()
     $("#carga_sobre_gmaps").text( carga_sobre_gmaps.check() );
     $("#tiempo_total").text( tiempo_total.check() );
 
   });
   
+  google.maps.event.addListener(mapa, 'zoom_changed', function( ){
+    cluster_manager.show_markers_zoom()
+  });
+
 });
 
 function load_json() {
