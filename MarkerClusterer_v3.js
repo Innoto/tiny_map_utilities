@@ -18,25 +18,45 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.options = new Object({
-    zoom_range : [11,15],
+    json_data : false,
+    zoom_range : [9,19],
     group_radious : 10, // in pixels
-    map : false
+    map : false,
+    filter_list: []
   });
   $.extend(true, this.options, opts);
 
 
 
-  this.reload_data = this.load_data = function(json_data) {
+  // init
+
+  google.maps.event.addListenerOnce(this.options.map, 'idle', function( ){
+
+    that.load_data();
+    that.create_r_trees();
+    that.raw_cluster_points();
+    that.cluster_points();
+    that.show_markers_zoom()
+
+  });
+  
+  google.maps.event.addListener(this.options.map, 'zoom_changed', function( ){
+    that.show_markers_zoom()
+  });
+
+  // end init
+
+
+  this.reload_data = this.load_data = function() {
+
     that = this;
-    that.json_data = json_data;
+    that.json_data = that.options.json_data;
     $( that.json_data ).each( function(i,e) {
           that.json_points[i] = e;
           that.add_marker(i);
           that.add_cluster_marker(i);
     });
   };
-
-
 
   this.create_r_trees = function() {
     that = this;
@@ -62,6 +82,7 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.raw_cluster_points = function() {
+
     that = this;
 
     for(zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
@@ -86,30 +107,37 @@ function  MarkerClusterer_v3( opts ) {
   }
 
 
+  this.filter = function(newList){
+    this.options.filter_list = mewList;
+
+  }
 
 
-
-
-
-
-
-
-
-
-  this.cluster_points = function( filter ) {
-    
+  this.cluster_points = function( ) {
     aply_filters= new time_calc();
-    
+
     var  bc;
     that = this;
 
 
+    // apply filters or simply clone arrays
+    if(this.options.filter_list.length){
+      
+    }
+    else {
+      for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+        that.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+        that.cluster_array_tmp_keys[zoomlevel] = $.merge( [],this.raw_cluster_array_keys[zoomlevel] );
+        that.cluster_array_keys[zoomlevel] = [];
+      }
+    }
+
+
+
+
+    // Make clusters
     for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
 
-      // clone arrays
-      this.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
-      this.cluster_array_tmp_keys[zoomlevel] = $.merge( [],this.raw_cluster_array_keys[zoomlevel] );
-      this.cluster_array_keys[zoomlevel] = [];
 
       while(this.cluster_array_tmp_keys[zoomlevel].length > 0){
 

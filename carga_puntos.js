@@ -4,56 +4,25 @@ var mapa = false;
 
 
 
-tiempo_total= new time_calc();
 $(document).ready(function() {
 
 
 
   // gmaps init
-  gmap_load= new time_calc();
   load_gmap();
 
-  google.maps.event.addListenerOnce(mapa, 'idle', function( ){
-
-    $("#gmap_load").text( gmap_load.check() );  
-
-
-
     // load json
-    carga_json= new time_calc();
-    load_json();
-    $("#carga_json").text( carga_json.check() );
+  carga_json= new time_calc();
+  load_json();
 
-    cluster_manager =  new MarkerClusterer_v3({
-      map: mapa
-    })
 
-    cluster_manager.load_data(json_data);
-    
+  cluster_manager =  new MarkerClusterer_v3({
+     map: mapa,
+     json_data: json_data,
+    zoom_range : [10,14],
+  })
 
-    carga_arbol= new time_calc();
-    cluster_manager.create_r_trees();
-    $("#carga_arbol").text( carga_arbol.check() );
 
-    procesado_clusters= new time_calc();
-    cluster_manager.raw_cluster_points();
-    $("#procesado_clusters").text( procesado_clusters.check() );
-
-    aply_filters= new time_calc();
-    cluster_manager.cluster_points();
-
-    $("#aplicar_filtros").text(  aply_filters.check());
-
-    carga_sobre_gmaps= new time_calc();
-    cluster_manager.show_markers_zoom()
-    $("#carga_sobre_gmaps").text( carga_sobre_gmaps.check() );
-    $("#tiempo_total").text( tiempo_total.check() );
-
-  });
-  
-  google.maps.event.addListener(mapa, 'zoom_changed', function( ){
-    cluster_manager.show_markers_zoom()
-  });
 
 });
 
