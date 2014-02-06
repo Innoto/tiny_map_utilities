@@ -138,12 +138,9 @@ comparacion = 0;
       }
       else
       {  
-        var group = [];
-        $(that.cluster_array[zoom][e]).each(function(i2,e2){
-          comparacion = comparacion+cluster_to_compare.length; 
-          if( $.inArray(e2, cluster_to_compare) === -1) {
-            group.push(e2);
-          }
+        group = [];
+        jQuery.grep(that.cluster_array[zoom][e], function(el) {
+                if (jQuery.inArray(el, cluster_to_compare) == -1) group.push(el);
         });
 
         if(group.length!=0){
@@ -164,37 +161,10 @@ comparacion = 0;
     that.cluster_array_tmp_keys[zoom] = $.merge([],tmp_array);
 
 
-/*
-
-    $(that.cluster_array_tmp_keys[zoom]).each(function(i,e) {
-      comparacion = comparacion+cluster_to_compare.length; 
-      if( that.cluster_array[zoom][e].length == 0  ){
-        that.cluster_array_tmp_keys[zoom].splice(i,1);
-      }
-      else {
-        var group = [];
-        $(that.cluster_array[zoom][e]).each(function(i2,e2){
-          comparacion = comparacion+cluster_to_compare.length; 
-          if( $.inArray(e2, cluster_to_compare) === -1) {
-            group.push(e2);
-          }
-        });
-
-        if(group.length!=0){
-          that.cluster_array[zoom][e] = group;
-        }
-        else {
-          that.cluster_array_tmp_keys[zoom].splice(i,1);
-        }   
-
-      }
-
-    });
-*/
-
-
   }
+
 tot=0;
+
   this.biggest_cluster_index = function(point_cluster_tmp_keys, point_cluster_array){
     var biggest_cluster_length=0;
     var b_c_i=0;
