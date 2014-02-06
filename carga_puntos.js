@@ -67,7 +67,7 @@ function load_json() {
 
 function load_gmap() {
   var mapOptions = {
-    zoom: 11,
+    zoom: 12,
     center: new google.maps.LatLng(
       51.511688,
       -0.185094

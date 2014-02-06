@@ -1,4 +1,4 @@
-cd=console.debug;
+
 
 function  MarkerClusterer_v3( opts ) {
   that = this;
@@ -17,8 +17,8 @@ function  MarkerClusterer_v3( opts ) {
   
 
   this.options = new Object({
-    zoom_range : [10,18],
-    group_radious : 30, // in pixels
+    zoom_range : [10,15],
+    group_radious : 10, // in pixels
     map : false
   });
   $.extend(true, this.options, opts);
@@ -57,7 +57,7 @@ function  MarkerClusterer_v3( opts ) {
     
   };
 
-
+maximocluster = 0;
   this.raw_cluster_points = function() {
     that = this;
 
@@ -73,6 +73,12 @@ function  MarkerClusterer_v3( opts ) {
         $( result ).each( function(i,ee){
             group.push(ee.index);
         });
+if(group.length> maximocluster){
+
+    maximocluster=group.length
+
+        //console.debug("zoom:" + zoomlevel  + "numeromax: "+ maximocluster);
+  }
 
         that.raw_cluster_array[zoomlevel][i] = group;
         that.raw_cluster_array_keys[zoomlevel].push(i);
@@ -110,29 +116,64 @@ function  MarkerClusterer_v3( opts ) {
         bc = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
 
         this.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
-        that.cluster_array_keys[zoomlevel].push(bc.index);
+        this.cluster_array_keys[zoomlevel].push(bc.index);
+        
         this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc.index] );
-
 
       }
 
 
-
     }
+    //console.debug(comparacion);
   }
+comparacion = 0;
 
 
   this.clean_clusters = function(zoom, cluster_to_compare) {
     that = this;
+    var e;
+
+    for(var i=0 ; that.cluster_array_tmp_keys[zoom].length>i ; i++) {
+
+        e = that.cluster_array_tmp_keys[zoom][i];
+
+ 
+        var group = [];
+        $(that.cluster_array[zoom][e]).each(function(i2,e2){
+          comparacion = comparacion+cluster_to_compare.length; 
+          if( $.inArray(e2, cluster_to_compare) === -1) {
+            group.push(e2);
+          }
+        });
+
+        if(group.length!=0){
+          that.cluster_array[zoom][e] = group;
+        }
+        else {
+          that.cluster_array_tmp_keys[zoom][i] = -1;
+        }   
+      
+    }
+
+    var tmp_array = []
+    $(that.cluster_array_tmp_keys[zoom]).each(function(i,el){
+      if(el > 0)
+        tmp_array.push(el);
+    });
+    that.cluster_array_tmp_keys[zoom] = $.merge([],tmp_array);
+
+
+/*
 
     $(that.cluster_array_tmp_keys[zoom]).each(function(i,e) {
-
-      if( that.cluster_array[zoom][e].length == 0 ||  $.inArray(e, cluster_to_compare) !== -1 ){
+      comparacion = comparacion+cluster_to_compare.length; 
+      if( that.cluster_array[zoom][e].length == 0  ){
         that.cluster_array_tmp_keys[zoom].splice(i,1);
       }
       else {
         var group = [];
-        $(that.cluster_array[zoom][e]).each(function(i2,e2){ 
+        $(that.cluster_array[zoom][e]).each(function(i2,e2){
+          comparacion = comparacion+cluster_to_compare.length; 
           if( $.inArray(e2, cluster_to_compare) === -1) {
             group.push(e2);
           }
@@ -148,7 +189,7 @@ function  MarkerClusterer_v3( opts ) {
       }
 
     });
-
+*/
 
 
   }
@@ -159,6 +200,7 @@ function  MarkerClusterer_v3( opts ) {
     var b_c_k=0;
 
     $(point_cluster_tmp_keys).each(function(i,e){
+
       if(point_cluster_array[e].length > biggest_cluster_length) {
         b_c_i=e;
         b_c_k=i;
@@ -172,19 +214,22 @@ function  MarkerClusterer_v3( opts ) {
 
   this.draw_markers = function() {
     that=this;
-    var zoomlevel = 10;
+    var zoomlevel = 12;
 
     console.debug(this.cluster_array_keys[zoomlevel].length)
     $(this.cluster_array_keys[zoomlevel]).each(function( i,cc ){
 
       //console.debug(that.cluster_array[zoomlevel][cc]);
       marker_latlng = new google.maps.LatLng( that.json_points[cc].latitude, that.json_points[cc].longitude );
+      
 
+      //console.debug(cc+ ": "+that.cluster_array[zoomlevel][cc].length);
+      
       marker = new google.maps.Marker({
-
-      position: marker_latlng,
-      map: that.options.map,
-      visible:true
+        title: $(cc).toString(),
+        position: marker_latlng,
+        map: that.options.map,
+        visible:true
       });
     });
   }
