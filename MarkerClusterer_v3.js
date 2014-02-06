@@ -57,7 +57,7 @@ function  MarkerClusterer_v3( opts ) {
     
   };
 
-maximocluster = 0;
+
   this.raw_cluster_points = function() {
     that = this;
 
@@ -73,12 +73,6 @@ maximocluster = 0;
         $( result ).each( function(i,ee){
             group.push(ee.index);
         });
-if(group.length> maximocluster){
-
-    maximocluster=group.length
-
-        //console.debug("zoom:" + zoomlevel  + "numeromax: "+ maximocluster);
-  }
 
         that.raw_cluster_array[zoomlevel][i] = group;
         that.raw_cluster_array_keys[zoomlevel].push(i);
@@ -126,18 +120,24 @@ if(group.length> maximocluster){
     }
     //console.debug(comparacion);
   }
-comparacion = 0;
 
+
+comparacion = 0;
 
   this.clean_clusters = function(zoom, cluster_to_compare) {
     that = this;
     var e;
 
     for(var i=0 ; that.cluster_array_tmp_keys[zoom].length>i ; i++) {
+        
+      e = that.cluster_array_tmp_keys[zoom][i];
 
-        e = that.cluster_array_tmp_keys[zoom][i];
-
- 
+      if( $.inArray(e, cluster_to_compare) !== -1)
+      {
+        that.cluster_array_tmp_keys[zoom][i] = -1;
+      }
+      else
+      {  
         var group = [];
         $(that.cluster_array[zoom][e]).each(function(i2,e2){
           comparacion = comparacion+cluster_to_compare.length; 
@@ -152,7 +152,8 @@ comparacion = 0;
         else {
           that.cluster_array_tmp_keys[zoom][i] = -1;
         }   
-      
+      }
+
     }
 
     var tmp_array = []
@@ -193,7 +194,7 @@ comparacion = 0;
 
 
   }
-
+tot=0;
   this.biggest_cluster_index = function(point_cluster_tmp_keys, point_cluster_array){
     var biggest_cluster_length=0;
     var b_c_i=0;
@@ -216,7 +217,8 @@ comparacion = 0;
     that=this;
     var zoomlevel = 12;
 
-    console.debug(this.cluster_array_keys[zoomlevel].length)
+    console.debug("Numero de comparacions: "+ comparacion);
+    console.debug("representados: "+ this.cluster_array_keys[zoomlevel].length);
     $(this.cluster_array_keys[zoomlevel]).each(function( i,cc ){
 
       //console.debug(that.cluster_array[zoomlevel][cc]);
@@ -225,6 +227,8 @@ comparacion = 0;
 
       //console.debug(cc+ ": "+that.cluster_array[zoomlevel][cc].length);
       
+      tot += that.cluster_array[zoomlevel][cc].length;
+      
       marker = new google.maps.Marker({
         title: $(cc).toString(),
         position: marker_latlng,
@@ -232,6 +236,8 @@ comparacion = 0;
         visible:true
       });
     });
+
+    console.debug("Totales agregados: "+ tot);
   }
 
 
