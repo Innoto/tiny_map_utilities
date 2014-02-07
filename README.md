@@ -11,3 +11,4 @@ Features:
  * Set marker icons and radious
  
 
+![marker_clusteterer_lite](https://f.cloud.github.com/assets/4938295/2109370/8322af64-8fef-11e3-87e7-9bf72600e211.png)
