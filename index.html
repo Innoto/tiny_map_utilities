@@ -3,7 +3,7 @@
   <title>Testing R tree and Gmaps clustering: Innoto</title>
 </head>
 <body>
-  <h1>R Tree clustering test</h1>
+  <h1>marker_clusterer_lite</h1>
   <div id="mapa" style="background-color:grey;width:100%;height:600px;"></div>
   <div> GMAP Canvas load: <span id="gmap_load"></span> ms</div>
   <div> JSON Load: <span id="carga_json"></span> ms</div>
@@ -38,7 +38,7 @@
         cluster_manager =  new MarkerClusterer_v3({
           map: mapa,
           json_data: json_data,
-          zoom_range : [12,20],
+          zoom_range : [12,17],
           //cluster_radious: 10
         })
 
