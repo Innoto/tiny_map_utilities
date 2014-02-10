@@ -42,6 +42,7 @@ function  MarkerClusterer_v3( opts ) {
   $.extend(true, this.options, opts);
 
 
+
   // init
 
   google.maps.event.addListenerOnce(this.options.map, 'idle', function( ){
@@ -70,6 +71,18 @@ function  MarkerClusterer_v3( opts ) {
           that.add_marker(i);
           that.add_cluster_marker(i);
     });
+  };
+
+  this.find_by_id = function( id ) {
+    var real_id = false;
+    $(this.json_points).each( function(i, e) {
+      if( id == e.id) {
+        real_id = i;
+        return false;
+      }
+    });
+
+    return real_id;
   };
 
   this.create_r_trees = function() {
@@ -122,8 +135,17 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.filter = function(newList){
+
+    // convert into real array keys
+    this.options.filter_list = [];
+    $(newList).each( function(i,e) {
+      
+    });
+    
     this.options.filter_list = newList;
+
     this.cluster_points();
+    this.show_markers_zoom()
   }
 
 
@@ -135,7 +157,19 @@ function  MarkerClusterer_v3( opts ) {
 
     // apply filters or simply clone arrays
     if(this.options.filter_list.length){
-      
+
+      for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+        that.cluster_array_tmp_keys[zoomlevel]= [];
+        // filter  keys
+        $( that.options.filter_list).each( function(i, el) {
+            that.cluster_array_tmp_keys[zoomlevel].push( that.find_by_id(el) );
+        });
+
+        //that.cluster_array_tmp_keys[zoomlevel]
+        that.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+        that.cluster_array_keys[zoomlevel] = [];
+      }
+
     }
     else {
       for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {

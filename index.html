@@ -10,13 +10,13 @@
       <td><b>Filter actions:</b></td> 
     </tr>
     <tr>
-      <td>All ids</td> <td><input type="radio" onclick="cluster_manager.filter([]);" checked name="prime"/></td>
+      <td>All ids</td> <td><input type="radio" onclick="filter_all();" checked name="prime"/></td>
     </tr>
     <tr>
-      <td>Filter by prime ids</td> <td><input type="radio" onclick="cluster_manager.filter( prime_ids(true) );" name="prime"/></td>
+      <td>Filter by prime ids</td> <td><input type="radio" onclick="filter_primes();" name="prime"/></td>
     </tr>
     <tr>
-      <td>Filter by not prime ids</td> <td><input type="radio" onclick="cluster_manager.filter( prime_ids(false) );" name="prime"/></td>
+      <td>Filter by not prime ids</td> <td><input type="radio" onclick="filter_not_primes();" name="prime"/></td>
     </tr>
   </table>
 
@@ -43,7 +43,7 @@
         cluster_manager =  new MarkerClusterer_v3({
           map: mapa,
           json_data: json_data,
-          zoom_range : [11,17],
+          zoom_range : [12,17],
           //cluster_radious: 10
         })
 
@@ -64,6 +64,23 @@
       }
 
 
+      function filter_primes(){
+        var primes = prime_ids(true);
+        var t = new time_calc();
+        cluster_manager.filter( primes );
+        console.debug("process_time:" + t.check() );
+      }
+      function filter_not_primes(){
+        var primes = prime_ids(false);
+        var t = new time_calc();
+        cluster_manager.filter( primes );
+        console.debug("process_time:" + t.check() );
+      }
+      function filter_all(){
+        var t = new time_calc();
+        cluster_manager.filter( [] );
+        console.debug("process_time:" + t.check() );
+      }
 
       function prime_ids(primes){
         var filtered_ids = [];
