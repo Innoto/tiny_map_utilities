@@ -27,7 +27,7 @@ function  MarkerClusterer_v3( opts ) {
 
   this.options = new Object({
     json_data : false,
-    zoom_range : [9,19],
+    zoom_range : [10,18],
     map : false,
     filter_list: [],
 
@@ -122,13 +122,12 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.filter = function(newList){
-    this.options.filter_list = mewList;
-
+    this.options.filter_list = newList;
+    this.cluster_points();
   }
 
 
   this.cluster_points = function( ) {
-    aply_filters= new time_calc();
 
     var  bc;
     that = this;
@@ -166,8 +165,6 @@ function  MarkerClusterer_v3( opts ) {
 
 
     }
-
-    $("#aplicar_filtros").text(  aply_filters.check());
 
   }
 

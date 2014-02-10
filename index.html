@@ -1,17 +1,24 @@
 <html>
 <head>
-  <title>Testing R tree and Gmaps clustering: Innoto</title>
+  <title>marker_clusterer_lite: Innoto</title>
 </head>
 <body>
   <h1>marker_clusterer_lite</h1>
   <div id="mapa" style="background-color:grey;width:100%;height:600px;"></div>
-  <div> GMAP Canvas load: <span id="gmap_load"></span> ms</div>
-  <div> JSON Load: <span id="carga_json"></span> ms</div>
-  <div> R Tree creation by levels: <span id="carga_arbol"></span> ms</div>
-  <div> Clustering proccess raw: <span id="procesado_clusters"></span> ms</div>
-  <div> Aply filters and remove dupes: <span id="aplicar_filtros"></span> ms</div>
-  <div> Load on gmaps: <span id="carga_sobre_gmaps"></span> ms</div><br>
-  <div> <b>Total time: <span id="tiempo_total"></span> ms</b></div>
+  <table>
+    <tr>
+      <td><b>Filter actions:</b></td> 
+    </tr>
+    <tr>
+      <td>All ids</td> <td><input type="radio" onclick="cluster_manager.filter([]);" checked name="prime"/></td>
+    </tr>
+    <tr>
+      <td>Filter by prime ids</td> <td><input type="radio" onclick="cluster_manager.filter( prime_ids(true) );" name="prime"/></td>
+    </tr>
+    <tr>
+      <td>Filter by not prime ids</td> <td><input type="radio" onclick="cluster_manager.filter( prime_ids(false) );" name="prime"/></td>
+    </tr>
+  </table>
 
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.js"></script>
@@ -25,8 +32,6 @@
 
       $(document).ready(function() {
 
-
-
         // gmaps init
         load_gmap();
 
@@ -38,11 +43,9 @@
         cluster_manager =  new MarkerClusterer_v3({
           map: mapa,
           json_data: json_data,
-          zoom_range : [12,17],
+          zoom_range : [11,17],
           //cluster_radious: 10
         })
-
-
 
       });
 
@@ -62,6 +65,35 @@
 
 
 
+      function prime_ids(primes){
+        var filtered_ids = [];
+        $(json_data).each( function(index, val) {
+          if(isPrime(val.id) && primes == true)
+            filtered_ids.push(val.id);
+          else 
+          if(!isPrime(val.id) && primes != true)
+            filtered_ids.push(val.id);
+        });
+        return filtered_ids;
+      }
+
+      function isPrime($n)
+      {
+        $i = 2;
+
+        if ($n == 2) {
+          return true;  
+        }
+       
+        while ($i < $n) {
+          if ($n % $i == 0) {
+            return false;
+          }
+          $i++;
+        }
+       
+        return true;
+      }
 
 
 
