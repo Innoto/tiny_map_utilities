@@ -31,7 +31,7 @@ function  MarkerClusterer_v3( opts ) {
     map : false,
     filter_list: [],
 
-    cluster_radious : 15, // in pixels
+    cluster_radious : 18, // in pixels
 
     icon_big_radious: 10,
     icon_big: current_path+"img/point_big.png",
@@ -141,7 +141,7 @@ function  MarkerClusterer_v3( opts ) {
     $(newList).each( function(i,e) {
       
     });
-    
+
     this.options.filter_list = newList;
 
     this.cluster_points();
@@ -160,14 +160,23 @@ function  MarkerClusterer_v3( opts ) {
 
       for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
         that.cluster_array_tmp_keys[zoomlevel]= [];
+        that.cluster_array[zoomlevel] = [];
+        that.cluster_array_keys[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+
         // filter  keys
         $( that.options.filter_list).each( function(i, el) {
             that.cluster_array_tmp_keys[zoomlevel].push( that.find_by_id(el) );
         });
 
-        //that.cluster_array_tmp_keys[zoomlevel]
-        that.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
-        that.cluster_array_keys[zoomlevel] = [];
+        
+        // filter into clusters
+        $(that.cluster_array_tmp_keys[zoomlevel]).each( function(i, e) {
+          var group = [];
+          that.cluster_array[zoomlevel][e] = this.raw_cluster_array[zoomlevel];
+          
+        });
+
+
       }
 
     }
@@ -244,17 +253,6 @@ function  MarkerClusterer_v3( opts ) {
 
 
   }
-
-
-  this.inArray = function(n, data){
-      var i = 0, len = data.length;
-      while (i < len) {
-        if(data[i] === n) return i;
-        i++;
-      }
-      return -1;
-  }
-
 
 
 
