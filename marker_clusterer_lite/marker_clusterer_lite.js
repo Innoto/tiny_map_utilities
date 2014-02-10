@@ -164,17 +164,27 @@ function  MarkerClusterer_v3( opts ) {
         that.cluster_array_keys[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
 
         // filter  keys
-        $( that.options.filter_list).each( function(i, el) {
-            that.cluster_array_tmp_keys[zoomlevel].push( that.find_by_id(el) );
+        $( that.options.filter_list).each( function(i, e) {
+            that.cluster_array_tmp_keys[zoomlevel].push( that.find_by_id(e) );
+            var group = [];
+            
+            $.grep(that.cluster_array[zoomlevel][e], function(el) {
+              if ($.inArray(el, that.options.filter_list) !== -1) group.push(el);
+            });
+
+            that.cluster_array[zoomlevel][e] = group;
+
         });
 
-        
+   /*     
         // filter into clusters
         $(that.cluster_array_tmp_keys[zoomlevel]).each( function(i, e) {
           var group = [];
           that.cluster_array[zoomlevel][e] = this.raw_cluster_array[zoomlevel];
-          
-        });
+
+        
+
+        });*/
 
 
       }
