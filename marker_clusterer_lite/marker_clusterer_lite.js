@@ -135,17 +135,15 @@ function  MarkerClusterer_v3( opts ) {
 
 
   this.filter = function(newList){
-
+    that=this;
     // convert into real array keys
     this.options.filter_list = [];
     $(newList).each( function(i,e) {
-      
+        that.options.filter_list.push( that.find_by_id(e) );
     });
 
-    this.options.filter_list = newList;
-
     this.cluster_points();
-    this.show_markers_zoom()
+    this.show_markers_zoom();
   }
 
 
@@ -159,32 +157,30 @@ function  MarkerClusterer_v3( opts ) {
     if(this.options.filter_list.length){
 
       for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
-        that.cluster_array_tmp_keys[zoomlevel]= [];
-        that.cluster_array[zoomlevel] = [];
-        that.cluster_array_keys[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+
+
+        that.cluster_array_tmp_keys[zoomlevel]= $.merge( [],this.raw_cluster_array_keys[zoomlevel] );//$.merge( [],that.options.filter_list);
+        that.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+        that.cluster_array_keys[zoomlevel] = [];
+
+
 
         // filter  keys
         $( that.options.filter_list).each( function(i, e) {
-            that.cluster_array_tmp_keys[zoomlevel].push( that.find_by_id(e) );
             var group = [];
-            
-            $.grep(that.cluster_array[zoomlevel][e], function(el) {
-              if ($.inArray(el, that.options.filter_list) !== -1) group.push(el);
+            $(that.cluster_array[zoomlevel][e]).each( function(el) {
+              if($.inArray(el, that.options.filter_list) !== -1) group.push(el);
             });
 
-            that.cluster_array[zoomlevel][e] = group;
+            console.debug(
+                that.cluster_array[zoomlevel][e].length + ':' + group.length
+            );
+
+
+            that.cluster_array[zoomlevel][e] = $.merge( [],group);
+            //that.cluster_array[zoomlevel][e] = group;
 
         });
-
-   /*     
-        // filter into clusters
-        $(that.cluster_array_tmp_keys[zoomlevel]).each( function(i, e) {
-          var group = [];
-          that.cluster_array[zoomlevel][e] = this.raw_cluster_array[zoomlevel];
-
-        
-
-        });*/
 
 
       }
