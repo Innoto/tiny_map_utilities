@@ -3,21 +3,7 @@
 
 function  MarkerClusterer_v3( opts ) {
   that = this;
-  this.json_data = false;
-  this.json_points = [];
-  this.r_trees = [];
 
-  this.raw_cluster_array_keys = [];
-  this.raw_cluster_array = [];
-
-  this.cluster_array_keys = [];
-  this.cluster_array_tmp_keys = [];
-  this.cluster_array = [];
-
-  this.markers = [];
-  this.cluster_markers = [];
-
-  
 
   // obtain paths
   var current_path = $('script[src$="/marker_clusterer_lite.js"]').attr('src').replace("marker_clusterer_lite.js", "");
@@ -30,37 +16,59 @@ function  MarkerClusterer_v3( opts ) {
     zoom_range : [10,19],
     map : false,
     filter_list: [],
-
+    show_disabled_points: true,
     cluster_radious : 18, // in pixels
 
-    icon_big_elements: 5, // use this icon when cluster more than x elements
+    icon_big_elements: 7, // use this icon when cluster more than x elements
     icon_big_radious: 20,
     icon_big: current_path+"img/point_big.png",
-    icon_medium_elements: 2, // use this icon when cluster more than x elements
     icon_medium_radious: 15,
     icon_medium: current_path+"img/point_medium.png", 
     icon_small_radious: 10,
-    icon_small: current_path+"img/point_small.png"
+    icon_small: current_path+"img/point_small.png",
+    icon_small_disabled: current_path+"img/point_small_disabled.png"
 
   });
   $.extend(true, this.options, opts);
 
 
+  this.json_data = false;
+  this.json_points = [];
+  this.r_trees = [];
+
+  this.raw_cluster_array_keys = [];
+  this.raw_cluster_array = [];
+
+  this.disabled_array_keys = [];
+  this.cluster_array_keys = [];
+  this.cluster_array_tmp_keys = [];
+  this.cluster_array = [];
+
+
+  this.markers = [];
+
+  this.icon_small_disabled = { url: this.options.icon_small_disabled };
+  this.icon_small = { url: this.options.icon_small };
+  this.icon_medium = { url: this.options.icon_medium };
+  this.icon_big = { url: this.options.icon_big };
+  
+
+
 
   // init
-
   google.maps.event.addListenerOnce(this.options.map, 'idle', function( ){
 
     that.load_data();
     that.create_r_trees();
     that.raw_cluster_points();
+    that.ghost_cluster_points();
     that.cluster_points();
-    that.show_markers_zoom()
+    that.show_markers()
 
   });
   
   google.maps.event.addListener(this.options.map, 'zoom_changed', function( ){
-    that.show_markers_zoom()
+    that.show_markers()
   });
 
   // end init
@@ -141,12 +149,53 @@ function  MarkerClusterer_v3( opts ) {
     that=this;
     // convert into real array keys
     this.options.filter_list = [];
+
+    // filtered points
     $(newList).each( function(i,e) {
-        that.options.filter_list.push( that.find_by_id(e) );
+      that.options.filter_list.push( that.find_by_id(e) );
     });
 
+
     this.cluster_points();
-    this.show_markers_zoom();
+    this.show_markers();
+  }
+
+
+  this.ghost_cluster_points = function( ) {
+
+    var  bc;
+    that = this;
+
+
+
+
+    // Make clusters
+      for( var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
+
+        that.cluster_array[zoomlevel] = $.merge( [],this.raw_cluster_array[zoomlevel] );
+        that.cluster_array_tmp_keys[zoomlevel] = $.merge( [],this.raw_cluster_array_keys[zoomlevel] );
+        that.cluster_array_keys[zoomlevel] = [];
+        that.disabled_array_keys[zoomlevel] = [];
+
+        while(this.cluster_array_tmp_keys[zoomlevel].length > 0){
+
+          bc = this.biggest_cluster_index(this.cluster_array_tmp_keys[zoomlevel], this.cluster_array[zoomlevel]);
+
+          this.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
+          this.cluster_array_keys[zoomlevel].push(bc.index);
+
+
+
+          if(that.cluster_array[zoomlevel][bc.index].length == 1)
+            this.disabled_array_keys[zoomlevel].push(bc.index);
+          
+
+          this.clean_clusters( zoomlevel , this.cluster_array[zoomlevel][bc.index] );
+
+        }
+
+
+      }
   }
 
 
@@ -212,8 +261,9 @@ function  MarkerClusterer_v3( opts ) {
 
 
     }
-
   }
+
+
 
 
 
@@ -254,8 +304,6 @@ function  MarkerClusterer_v3( opts ) {
         tmp_array.push(el);
     });
     that.cluster_array_tmp_keys[zoom] = $.merge([],tmp_array);
-
-
   }
 
 
@@ -285,18 +333,12 @@ function  MarkerClusterer_v3( opts ) {
 
   this.add_marker = function( marker_id ) {
 
-    var image = {
-      url: this.options.icon_small 
-    };
-
-
     var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
       
     var marker = new google.maps.Marker({
       position: marker_latlng,
       map: this.options.map,
-      visible:false,
-      icon: image
+      visible:false
     });
 
     this.markers[marker_id] = marker;
@@ -305,10 +347,12 @@ function  MarkerClusterer_v3( opts ) {
 
 
 
-  this.show_markers_zoom = function() {
+  this.show_markers = function() {
     that=this;
     var zoomlevel = cluster_manager.options.map.getZoom();
     
+
+
     if(zoomlevel > this.options.zoom_range[1])  
       zoomlevel = this.options.zoom_range[1];
     else
@@ -326,17 +370,35 @@ function  MarkerClusterer_v3( opts ) {
     });
 
 
+    // disabled markers
+    if(this.options.show_disabled_points == true){
+
+      $(this.disabled_array_keys[zoomlevel]).each(function(i,e){
+        
+        that.markers[e].setIcon(that.icon_small_disabled);
+        that.markers[e].setVisible(true);
+
+      });
+    }
+
+    // enabled markers
     $(this.cluster_array_keys[zoomlevel]).each( function(i, e) {
 
       if( that.cluster_array[zoomlevel][e].length > 1 ){
-
-        that.markers[e].setVisible(true);
+        if( that.cluster_array[zoomlevel][e].length > that.options.icon_big_elements ) {
+          that.markers[e].setIcon(that.icon_big);
+        }
+        else {
+          that.markers[e].setIcon(that.icon_medium);      
+        }
       }
       else{
-        that.markers[e].setVisible(true);
+        that.markers[e].setIcon(that.icon_small);
       }
 
+      that.markers[e].setVisible(true);
     });
+
 
   }
 
