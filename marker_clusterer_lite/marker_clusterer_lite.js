@@ -27,15 +27,19 @@ function  MarkerClusterer_v3( opts ) {
 
   this.options = new Object({
     json_data : false,
-    zoom_range : [10,18],
+    zoom_range : [10,19],
     map : false,
     filter_list: [],
 
     cluster_radious : 18, // in pixels
 
-    icon_big_radious: 10,
+    icon_big_elements: 5, // use this icon when cluster more than x elements
+    icon_big_radious: 20,
     icon_big: current_path+"img/point_big.png",
-    icon_small_radious: 6,
+    icon_medium_elements: 2, // use this icon when cluster more than x elements
+    icon_medium_radious: 15,
+    icon_medium: current_path+"img/point_medium.png", 
+    icon_small_radious: 10,
     icon_small: current_path+"img/point_small.png"
 
   });
@@ -69,7 +73,6 @@ function  MarkerClusterer_v3( opts ) {
     $( that.json_data ).each( function(i,e) {
           that.json_points[i] = e;
           that.add_marker(i);
-          that.add_cluster_marker(i);
     });
   };
 
@@ -299,24 +302,7 @@ function  MarkerClusterer_v3( opts ) {
     this.markers[marker_id] = marker;
   }
 
-  this.add_cluster_marker = function(marker_id) {
 
-    var image = {
-      url: this.options.icon_big 
-    };
-
-
-    var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
-      
-    var marker = new google.maps.Marker({
-      position: marker_latlng,
-      map: this.options.map,
-      visible:false ,
-      icon: image
-    });
-
-    this.cluster_markers[marker_id] = marker;
-  }
 
 
   this.show_markers_zoom = function() {
@@ -343,14 +329,14 @@ function  MarkerClusterer_v3( opts ) {
     $(this.cluster_array_keys[zoomlevel]).each( function(i, e) {
 
       if( that.cluster_array[zoomlevel][e].length > 1 ){
-        that.cluster_markers[e].setVisible(true);
+
+        that.markers[e].setVisible(true);
       }
       else{
         that.markers[e].setVisible(true);
       }
 
     });
-
 
   }
 
