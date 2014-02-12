@@ -1,7 +1,7 @@
 marker_clusterer_lite (Under dev)
 ==================
 
-Very fast cluster based in [r-bush](https://github.com/mourner/rbush) . It runs on gmaps api v3
+Fast clusterer based in [r-bush](https://github.com/mourner/rbush) . For gmaps api v3
 
 Features:
  * Reads data in js objects array, for example from an ajax loaded j-son [{id: 1, latitude:X, longitude:Y}, {id: 1, latitude:X, longitude:Y}]
@@ -11,4 +11,4 @@ Features:
  * Set marker icons and radious
  
 
-![marker_clusteterer_lite](https://f.cloud.github.com/assets/4938295/2109370/8322af64-8fef-11e3-87e7-9bf72600e211.png)
+![marker_clusteterer_lite](https://f.cloud.github.com/assets/4938295/2140186/b36f23ee-9348-11e3-881b-a5eb70bc6960.png)
