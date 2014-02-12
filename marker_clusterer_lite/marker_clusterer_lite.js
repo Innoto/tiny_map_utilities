@@ -17,16 +17,17 @@ function  MarkerClusterer_v3( opts ) {
     map : false,
     filter_list: [],
     show_disabled_points: true,
-    cluster_radious : 18, // in pixels
+    cluster_radious : 20, // in pixels
 
-    icon_big_elements: 7, // use this icon when cluster more than x elements
-    icon_big_radious: 20,
+    icon_big_elements: 6, // use this icon when cluster more than x elements
+    icon_big_diameter: 20,
     icon_big: current_path+"img/point_big.png",
-    icon_medium_radious: 15,
+    icon_medium_diameter: 15,
     icon_medium: current_path+"img/point_medium.png", 
-    icon_small_radious: 10,
+    icon_small_diameter: 10,
     icon_small: current_path+"img/point_small.png",
-    icon_small_disabled: current_path+"img/point_small_disabled.png"
+    icon_disabled_diameter: 10,    
+    icon_disabled: current_path+"img/point_small_disabled.png"
 
   });
   $.extend(true, this.options, opts);
@@ -47,10 +48,10 @@ function  MarkerClusterer_v3( opts ) {
 
   this.markers = [];
 
-  this.icon_small_disabled = { url: this.options.icon_small_disabled };
-  this.icon_small = { url: this.options.icon_small };
-  this.icon_medium = { url: this.options.icon_medium };
-  this.icon_big = { url: this.options.icon_big };
+  this.icon_disabled = { url: this.options.icon_disabled , anchor: new google.maps.Point( this.options.icon_disabled_diameter/2 , this.options.icon_disabled_diameter/2 ) };
+  this.icon_small = { url: this.options.icon_small , anchor: new google.maps.Point( this.options.icon_small_diameter/2 , this.options.icon_small_diameter/2 ) };
+  this.icon_medium = { url: this.options.icon_medium , anchor: new google.maps.Point( this.options.icon_medium_diameter/2 , this.options.icon_medium_diameter/2 ) };
+  this.icon_big = { url: this.options.icon_big , anchor: new google.maps.Point( this.options.icon_big_diameter/2 , this.options.icon_big_diameter/2 ) };
   
 
 
@@ -375,7 +376,7 @@ function  MarkerClusterer_v3( opts ) {
 
       $(this.disabled_array_keys[zoomlevel]).each(function(i,e){
         
-        that.markers[e].setIcon(that.icon_small_disabled);
+        that.markers[e].setIcon(that.icon_disabled);
         that.markers[e].setVisible(true);
 
       });
@@ -387,12 +388,15 @@ function  MarkerClusterer_v3( opts ) {
       if( that.cluster_array[zoomlevel][e].length > 1 ){
         if( that.cluster_array[zoomlevel][e].length > that.options.icon_big_elements ) {
           that.markers[e].setIcon(that.icon_big);
+          console.debug("grande")
         }
         else {
+          console.debug("mediano")
           that.markers[e].setIcon(that.icon_medium);      
         }
       }
       else{
+        console.debug("peque")
         that.markers[e].setIcon(that.icon_small);
       }
 
