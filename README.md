@@ -2,7 +2,7 @@ tiny_map_utilities
 ==================
 
 
-#marker_clusterer_lite
+##marker_clusterer_lite
 
 
 Fast clusterer based in [r-bush](https://github.com/mourner/rbush) . For gmaps api v3
