@@ -1,12 +1,12 @@
 
 
 
-function  MarkerClusterer_v3( opts ) {
+function  marker_clusterer( opts ) {
   that = this;
 
 
   // obtain paths
-  var current_path = $('script[src$="/marker_clusterer_lite.js"]').attr('src').replace("marker_clusterer_lite.js", "");
+  var current_path = $('script[src$="/marker_clusterer.js"]').attr('src').replace("marker_clusterer.js", "");
 
   // load r-bush lib
   $.getScript( current_path+ 'vendor/rbush.js');
@@ -388,15 +388,12 @@ function  MarkerClusterer_v3( opts ) {
       if( that.cluster_array[zoomlevel][e].length > 1 ){
         if( that.cluster_array[zoomlevel][e].length > that.options.icon_big_elements ) {
           that.markers[e].setIcon(that.icon_big);
-          console.debug("grande")
         }
         else {
-          console.debug("mediano")
           that.markers[e].setIcon(that.icon_medium);      
         }
       }
       else{
-        console.debug("peque")
         that.markers[e].setIcon(that.icon_small);
       }
 

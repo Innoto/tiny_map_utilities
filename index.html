@@ -1,9 +1,9 @@
 <html>
 <head>
-  <title>marker_clusterer_lite: Innoto</title>
+  <title>marker_clusterer - tiny_map_utilities: Innoto</title>
 </head>
 <body>
-  <h1>marker_clusterer_lite</h1>
+  <h1>marker_clusterer - tiny_map_utilities</h1>
   <div id="mapa" style="background-color:grey;width:100%;height:600px;"></div>
   <table>
     <tr>
@@ -22,7 +22,7 @@
 
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.js"></script>
-  <script type="text/javascript" src="marker_clusterer_lite/marker_clusterer_lite.js"></script>
+  <script type="text/javascript" src="marker_clusterer/marker_clusterer.js"></script>
   <script type="text/javascript">
 
       var json_data = false;
@@ -40,7 +40,7 @@
         load_json();
 
 
-        cluster_manager =  new MarkerClusterer_v3({
+        cluster_manager =  new marker_clusterer({
           map: mapa,
           json_data: json_data,
           zoom_range : [11,17],
