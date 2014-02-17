@@ -11,8 +11,8 @@ function smart_infowindow(opts) {
 
     background_color: '#fff',
     peak_image: false,
-    max_height: 200,
-    width: 100,
+    max_height: 400,
+    width: 300,
     lock_on_hover: true, // when hover is locked, allways up direction
     distance_on_click: 5,
     distance_on_hover: [5,5]
