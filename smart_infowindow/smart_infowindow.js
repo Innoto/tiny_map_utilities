@@ -13,9 +13,9 @@ function smart_infowindow(opts) {
     peak_image: false,
     max_height: 200,
     width: 100,
-    lock_on_hover: false,
-    distance_on_click: [],
-    distance_on_hover: []
+    lock_on_hover: true, // when hover is locked, allways up direction
+    distance_on_click: 5,
+    distance_on_hover: [5,5]
   });
   $.extend(true, this.options, opts);
 
@@ -45,15 +45,15 @@ smart_infowindow.prototype.draw = function() {
 // hovers and clicks
 
 smart_infowindow.prototype.openHover = function( marker, content ) {
-  this.SetStyles();
   this.SetPosition(marker, false);
   this.SetContent(content);
+  this.SetStyles();
 };
 
 smart_infowindow.prototype.openClick = function( marker, content ) {
-  this.SetStyles();
   this.SetPosition(marker, true);
   this.SetContent(content);
+  this.SetStyles();
 };
 
 
@@ -65,24 +65,36 @@ smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).css('background-color', this.options.background_color );
   $(this.div_).css('width', this.options.width );
   $(this.div_).css('max-height', this.options.max_height );
+
+  $(this.div_).show();
+
+  s_i_that = this;
+  google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
 };
 
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var overlayProjection = this.getProjection();
-  var canvas_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
-  if(click_ev === true) {
+  var canvas_marker_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
+
+  // center map when is a click event
+  if(click_ev == true) {
       this.options.map.setCenter( marker.getPosition() );
   }
+
+  if( 
+      this.options.lock_on_hover == true || // hover is locked, allways up direction
+      click_ev == true || // is a click event
+
+
+
+
   this.div_.style.left = canvas_point.x + 'px';
   this.div_.style.top = canvas_point.y + 'px';
+
 };
 
 smart_infowindow.prototype.SetContent = function(content) {
-  s_i_that = this;
   $(this.div_).html(content);
-  $(this.div_).show();
-
-  google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
 };
 
 
@@ -90,7 +102,7 @@ smart_infowindow.prototype.SetContent = function(content) {
 // Public Setters
 //
 
-smart_infowindow.prototype.SetDistanceOnClick = function( distances_array ) {
+smart_infowindow.prototype.SetDistanceOnClick = function( distances ) {
   this.options.distance_on_click = distances_array; 
 };
 
