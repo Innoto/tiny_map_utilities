@@ -70,9 +70,9 @@ smart_infowindow.prototype.SetStyles = function() {
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var overlayProjection = this.getProjection();
   var canvas_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
-  if(click_ev == true)
-      this.options.map.setCenter(marker.getPosition());
-  this.options.map.setCenter(marker.getPosition());
+  if(click_ev === true) {
+      this.options.map.setCenter( marker.getPosition() );
+  }
   this.div_.style.left = canvas_point.x + 'px';
   this.div_.style.top = canvas_point.y + 'px';
 };
