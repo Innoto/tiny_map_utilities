@@ -45,14 +45,14 @@ smart_infowindow.prototype.draw = function() {
 // hovers and clicks
 
 smart_infowindow.prototype.openHover = function( marker, content ) {
-  this.SetPosition(marker, false);
   this.SetContent(content);
+  this.SetPosition(marker, false);
   this.SetStyles();
 };
 
 smart_infowindow.prototype.openClick = function( marker, content ) {
-  this.SetPosition(marker, true);
   this.SetContent(content);
+  this.SetPosition(marker, true);
   this.SetStyles();
 };
 
@@ -75,21 +75,62 @@ smart_infowindow.prototype.SetStyles = function() {
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var overlayProjection = this.getProjection();
   var canvas_marker_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
+  var bounds = this.options.map.getBounds();
+
+  var x_max = overlayProjection.fromLatLngToDivPixel( bounds.getNorthEast() ).x;
+  var y_max = overlayProjection.fromLatLngToDivPixel( bounds.getNorthEast() ).y;
+  var x_min = overlayProjection.fromLatLngToDivPixel( bounds.getSouthWest() ).x;
+  var y_min = overlayProjection.fromLatLngToDivPixel( bounds.getSouthWest() ).y;
+
+  var left =  canvas_marker_point.x - x_min;
+  var right = x_max - canvas_marker_point.x;
+  var up = Math.abs(y_max - canvas_marker_point.y);
+  var down = Math.abs(canvas_marker_point.y - y_min);
+
+  console.debug(
+      //x_max+ ','+ y_max+' _ '+ x_min + ',' + y_min
+      'esquerda:' + left + ',' +
+      'dereita:' + right + ',' +
+      'arriba:' + up + ',' +
+      'abaixo:' + down + ','
+    );
+
+  // Y axis radious space
+  var enought_top_space = ( true ) ? true : false;
+  var enought_bottom_space = ( true ) ? true : false;
+
+  // X axis radious space
+  var enought_right_space = ( true ) ? true : false;
+  var enought_left_space = ( true ) ? true : false;
+
+
+  // decide Y position
+  if( 
+      this.options.lock_on_hover == true || // hover is locked, allways up direction
+      click_ev == true || // is a click event
+      enought_top_space
+  ){
+
+  }
+  else
+  if(
+      enought_bottom_space
+  ){
+
+  }
+
+  // decide X position
+
+
 
   // center map when is a click event
   if(click_ev == true) {
       this.options.map.setCenter( marker.getPosition() );
   }
 
-  if( 
-      this.options.lock_on_hover == true || // hover is locked, allways up direction
-      click_ev == true || // is a click event
 
-
-
-
-  this.div_.style.left = canvas_point.x + 'px';
-  this.div_.style.top = canvas_point.y + 'px';
+  this.div_.style.top = ( canvas_marker_point.y - $(this.div_).height() ) + 'px';
+  this.div_.style.left = ( canvas_marker_point.x - this.options.width/2 ) + 'px';
 
 };
 
