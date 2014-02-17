@@ -49,9 +49,12 @@
 
 
           google.maps.event.addListener(marker, 'click', function( ){
+            s_iw.openClick(marker);
+          });         
 
-            s_iw.open(marker);
-          } );         
+          google.maps.event.addListener(marker, 'mouseover', function( ){
+            s_iw.openHover(marker);
+          });   
 
         });
       }
