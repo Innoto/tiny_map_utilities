@@ -13,9 +13,8 @@ function smart_infowindow(opts) {
     peak_image: false,
     max_height: 400,
     width: 300,
-    lock_on_hover: true, // when hover is locked, allways up direction
-    distance_on_click: 5,
-    distance_on_hover: [5,5]
+    allways_top: false, // when hover is locked, allways up direction
+    marker_distance: [41,10] // [top, bottom]
   });
   $.extend(true, this.options, opts);
 
@@ -84,39 +83,37 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
   var left =  canvas_marker_point.x - x_min;
   var right = x_max - canvas_marker_point.x;
-  var up = Math.abs(y_max - canvas_marker_point.y);
-  var down = Math.abs(canvas_marker_point.y - y_min);
+  var top = Math.abs(y_max - canvas_marker_point.y);
+  var bottom = Math.abs(canvas_marker_point.y - y_min);
 
   console.debug(
       //x_max+ ','+ y_max+' _ '+ x_min + ',' + y_min
       'esquerda:' + left + ',' +
       'dereita:' + right + ',' +
-      'arriba:' + up + ',' +
-      'abaixo:' + down + ','
+      'arriba:' + top + ',' +
+      'abaixo:' + bottom + ','
     );
 
   // Y axis radious space
-  var enought_top_space = ( true ) ? true : false;
-  var enought_bottom_space = ( true ) ? true : false;
+  var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
+//  var enought_bottom_space = ( ($(this.div_).height() + this.options.marker_distance[1]) < bottom  ) ? true : false;
 
   // X axis radious space
-  var enought_right_space = ( true ) ? true : false;
-  var enought_left_space = ( true ) ? true : false;
+  var enought_right_space = ( this.options.width < left ) ? true : false;
+  var enought_left_space = ( this.options.width < right ) ? true : false;
 
 
   // decide Y position
   if( 
-      this.options.lock_on_hover == true || // hover is locked, allways up direction
-      click_ev == true || // is a click event
-      enought_top_space
-  ){
+      this.options.allways_top == true || // hover is locked, allways up direction
+      enought_top_space || // have enought space
+      click_ev == true  // is a click event
 
+  ){
+    var final_peak_point_y = canvas_marker_point.y - $(this.div_).height() - this.options.marker_distance[0];
   }
-  else
-  if(
-      enought_bottom_space
-  ){
-
+  else {
+    var final_peak_point_y = canvas_marker_point.y + this.options.marker_distance[1] ;
   }
 
   // decide X position
@@ -129,7 +126,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   }
 
 
-  this.div_.style.top = ( canvas_marker_point.y - $(this.div_).height() ) + 'px';
+  this.div_.style.top = final_peak_point_y + 'px';
   this.div_.style.left = ( canvas_marker_point.x - this.options.width/2 ) + 'px';
 
 };
@@ -143,13 +140,12 @@ smart_infowindow.prototype.SetContent = function(content) {
 // Public Setters
 //
 
-smart_infowindow.prototype.SetDistanceOnClick = function( distances ) {
-  this.options.distance_on_click = distances_array; 
+
+// @distances_array : [top, bottom]
+smart_infowindow.prototype.SetMarkerDistances = function( distances_array ) {
+  this.options.marker_distance = marker_distance; 
 };
 
-smart_infowindow.prototype.SetDistanceOnHover = function( distances_array ) {
-  this.options.distance_on_hover = distances_array;
-};
 
 smart_infowindow.prototype.SetWidth = function( width ) {
   this.options.width = width;
