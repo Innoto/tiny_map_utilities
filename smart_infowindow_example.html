@@ -49,11 +49,11 @@
 
 
           google.maps.event.addListener(marker, 'click', function( ){
-            s_iw.openClick(marker);
+            s_iw.openClick(marker, "<br><br>click<br><br>");
           });         
 
           google.maps.event.addListener(marker, 'mouseover', function( ){
-            s_iw.openHover(marker);
+            s_iw.openHover(marker,"<br><br>hover<br><br>");
           });   
 
         });

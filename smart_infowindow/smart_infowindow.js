@@ -8,6 +8,9 @@ function smart_infowindow(opts) {
 
   this.options = new Object({
     map : false,
+
+    background_color: '#fff',
+    peak_image: false,
     max_height: 200,
     width: 100,
     lock_on_hover: false,
@@ -16,7 +19,7 @@ function smart_infowindow(opts) {
   });
   $.extend(true, this.options, opts);
 
-  this.div_ = null;
+  this.div_ = false;
   this.setMap(this.options.map);
 }
 
@@ -24,12 +27,8 @@ function smart_infowindow(opts) {
 smart_infowindow.prototype.onAdd = function() {
 
   var div = document.createElement('div');
-  div.style.borderStyle = 'none';
-  div.style.display = 'none';
-  div.style.borderWidth = '0px';
-  div.style.position = 'absolute';
-
-  $(div).html("<div style='background-color:white;box-shadow: 0px 0px 10px #888;'>ola mundo</div>");
+  $(div).css('display' , 'none');
+  $(div).css('position' , 'absolute');
 
   this.div_ = div;
 
@@ -45,25 +44,50 @@ smart_infowindow.prototype.draw = function() {
 
 // hovers and clicks
 
-smart_infowindow.prototype.openHover = function( marker ) {
-  var overlayProjection = this.getProjection();
-  var canvas_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
-  this.div_.style.left = canvas_point.x + 'px';
-  this.div_.style.top = canvas_point.y + 'px';
-  $(this.div_).show();
+smart_infowindow.prototype.openHover = function( marker, content ) {
+  this.SetStyles();
+  this.SetPosition(marker, false);
+  this.SetContent(content);
 };
 
-smart_infowindow.prototype.openClick = function( marker ) {
-  this.options.map.setCenter(marker.getPosition());
-  var overlayProjection = this.getProjection();
-  var canvas_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
-  this.div_.style.left = canvas_point.x + 'px';
-  this.div_.style.top = canvas_point.y + 'px';
-  $(this.div_).show();
+smart_infowindow.prototype.openClick = function( marker, content ) {
+  this.SetStyles();
+  this.SetPosition(marker, true);
+  this.SetContent(content);
 };
+
 
 //
-// Setters
+// Private Setters
+//
+smart_infowindow.prototype.SetStyles = function() {
+  $(this.div_).css('box-shadow', '0px 0px 10px #888' );
+  $(this.div_).css('background-color', this.options.background_color );
+  $(this.div_).css('width', this.options.width );
+  $(this.div_).css('max-height', this.options.max_height );
+};
+
+smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
+  var overlayProjection = this.getProjection();
+  var canvas_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
+  if(click_ev == true)
+      this.options.map.setCenter(marker.getPosition());
+  this.options.map.setCenter(marker.getPosition());
+  this.div_.style.left = canvas_point.x + 'px';
+  this.div_.style.top = canvas_point.y + 'px';
+};
+
+smart_infowindow.prototype.SetContent = function(content) {
+  s_i_that = this;
+  $(this.div_).html(content);
+  $(this.div_).show();
+
+  google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
+};
+
+
+//
+// Public Setters
 //
 
 smart_infowindow.prototype.SetDistanceOnClick = function( distances_array ) {
