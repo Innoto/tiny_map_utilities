@@ -36,7 +36,6 @@
 
 
       function create_marker() {
-   
 
         google.maps.event.addDomListener(window, 'load', function( ){
 
@@ -48,8 +47,11 @@
         
           s_iw = new smart_infowindow({map:mapa});
 
-          //s_iw.open(marker);
-          
+
+          google.maps.event.addListener(marker, 'click', function( ){
+
+            s_iw.open(marker);
+          } );         
 
         });
       }

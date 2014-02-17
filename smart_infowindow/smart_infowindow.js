@@ -20,6 +20,7 @@ smart_infowindow.prototype.onAdd = function() {
 
   var div = document.createElement('div');
   div.style.borderStyle = 'none';
+  div.style.display = 'none';
   div.style.borderWidth = '0px';
   div.style.position = 'absolute';
 
@@ -32,7 +33,7 @@ smart_infowindow.prototype.onAdd = function() {
   panes.overlayLayer.appendChild(div);
 
   var overlayProjection = this.getProjection();
-
+  //var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
   var div = this.div_;
   div.style.left = 15 + 'px';
   div.style.top = 200 + 'px';
@@ -41,5 +42,8 @@ smart_infowindow.prototype.onAdd = function() {
 smart_infowindow.prototype.draw = function() {
 };
 
-
-
+smart_infowindow.prototype.open = function() {
+  $(this.div_).show();
+  this.div_.style.left = 15 + 'px';
+  this.div_.style.top = 200 + 'px';
+};
