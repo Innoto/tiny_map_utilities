@@ -1,0 +1,59 @@
+<html>
+<head>
+  <title>smart_infowindow - tiny_map_utilities: Innoto</title>
+</head>
+<body>
+  <h1>smart_infowindow - tiny_map_utilities</h1>
+  <div id="mapa" style="background-color:grey;width:100%;height:600px;"></div>
+
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.js"></script>
+  <script type="text/javascript" src="smart_infowindow/smart_infowindow.js"></script>
+  <script type="text/javascript">
+
+      var json_data = false;
+      var mapa = false;
+
+
+
+      $(document).ready(function() {
+
+        // gmaps init
+        load_gmap();
+        create_marker();
+      });
+
+
+
+      function load_gmap() {
+        var mapOptions = {
+          zoom: 12,
+          center: new google.maps.LatLng(62.281819, -150.287132)
+        };
+        mapa = new google.maps.Map(document.getElementById('mapa'),
+            mapOptions);
+      }
+
+
+      function create_marker() {
+   
+
+        google.maps.event.addDomListener(window, 'load', function( ){
+
+          var marker_latlng = new google.maps.LatLng(62.281819, -150.287132);
+          var marker = new google.maps.Marker({
+            position: marker_latlng,
+            map: mapa,
+          });
+        
+          s_iw = new smart_infowindow({map:mapa});
+
+          //s_iw.open(marker);
+          
+
+        });
+      }
+
+  </script>
+</body>
+</html>
