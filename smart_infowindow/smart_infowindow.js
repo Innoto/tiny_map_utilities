@@ -238,6 +238,11 @@ smart_infowindow.prototype.SetContent = function(content) {
 // Public Setters
 //
 
+// @distances_array : [top, bottom]
+smart_infowindow.prototype.SetMarkerDistances = function( distances_array ) {
+  this.options.marker_distance = marker_distance; 
+};
+
 smart_infowindow.prototype.SetWidth = function( width ) {
   this.options.width = width;
 };
