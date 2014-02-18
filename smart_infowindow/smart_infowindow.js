@@ -16,12 +16,17 @@ function smart_infowindow(opts) {
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:20,
-    marker_distance: [41,0] // [top, bottom]
+    marker_distance: [38,0], // [top, bottom]
+
+    peak_img: 'smart_infowindow/peak.png',
+    peak_img_width: 11,
+    peak_img_height: 7
   });
   $.extend(true, this.options, opts);
 
   this.div_ = false;
   this.setMap(this.options.map);
+
 }
 
 
@@ -40,7 +45,7 @@ smart_infowindow.prototype.onAdd = function() {
 
   // Add the element to the "overlayLayer" pane.
   var panes = this.getPanes();
-  panes.overlayLayer.appendChild(this.div_);
+  panes.floatPane.appendChild(this.div_);
 
 };
 
@@ -69,9 +74,9 @@ smart_infowindow.prototype.openClick = function( marker, content ) {
 smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
   $(this.div_).find('.box').css('background-color', this.options.background_color );
+  $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
   $(this.div_).find('.box').css('max-height', this.options.max_height );
-
   $(this.div_).show();
 
   s_i_that = this;
@@ -92,7 +97,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var right = x_max - canvas_marker_point.x;
   var top = Math.abs(y_max - canvas_marker_point.y);
   var bottom = Math.abs(canvas_marker_point.y - y_min);
-
+/*
   console.debug(
       //x_max+ ','+ y_max+' _ '+ x_min + ',' + y_min
       'esquerda:' + left + ',' +
@@ -100,6 +105,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
       'arriba:' + top + ',' +
       'abaixo:' + bottom + ','
     );
+*/
 
   // Y axis radious space
   var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
@@ -119,10 +125,12 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
       enought_top_space || // have enought space
       click_ev == true  // is a click event
   ){
-    var final_peak_point_y = canvas_marker_point.y - $(this.div_).height() - this.options.marker_distance[0];
+    $(this.div_).find('.bottom-space').css('height', this.options.peak_img_height);
+    var final_peak_point_y = canvas_marker_point.y - $(this.div_).height() - this.options.marker_distance[0] ;
     peak_v = -1; // peak vertical on bottom
   }
   else {
+    $(this.div_).find('.top-space').css('height', this.options.peak_img_height);
     var final_peak_point_y = canvas_marker_point.y + this.options.marker_distance[1] ;
     peak_v = 1; // peak vertical on top
   }
@@ -172,41 +180,39 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
 smart_infowindow.prototype.SetPeak = function(v, h) {
 
-  //var peak_element = "<img src='smart_infowindow/peak.png' />";
-  this.peak_img = document.createElement('img');
-
-
-  $(this.peak_img).attr('src', 'smart_infowindow/peak.png');
-  this.peak_img_width = $(this.peak_img).width();
+  var peak_img = document.createElement('img');
+  $(peak_img).attr('src', this.options.peak_img);
 
   $(this.div_).find('.top-space').html("");
   $(this.div_).find('.bottom-space').html("");
 
   // set to or bottom position (and rotate with jquery rotate library)
-  if(v==1){
+  if(v===1){
     var current_peak_container = $(this.div_).find('.top-space');
-    current_peak_container.html(this.peak_img).find('img').rotate(180);
+    current_peak_container.css('height:default')
+    current_peak_container.html(peak_img)
+
+    current_peak_container.find('img').rotate(180);
   }
   else{
     var current_peak_container = $(this.div_).find('.bottom-space');
-    current_peak_container.html(this.peak_img);
+    current_peak_container.css('height:default')
+    current_peak_container.html(peak_img);
   }
 
   current_peak_container.css('height', current_peak_container.find('img').height())
 
-//console.debug(smart_infowindow_this.peak_img_width, current_peak_container.find('img').height())
-
   // set horizontal position
   if( h == -1 ){
-    var peak_margin_left = this.options.width - this.options.corner_distance - this.peak_img_width/2;
+    var peak_margin_left = this.options.width - this.options.corner_distance - this.options.peak_img_width/2;
   }
   else 
   if( h == 1)
   {
-    var peak_margin_left = this.options.corner_distance - this.peak_img_width/2;
+    var peak_margin_left = this.options.corner_distance - this.options.peak_img_width/2;
   }
   else {
-    var peak_margin_left = this.options.width/2  - this.peak_img_width/2;
+    var peak_margin_left = this.options.width/2  - this.options.peak_img_width/2;
   }
 
   current_peak_container.find('img').css('margin-left', peak_margin_left+'px');
