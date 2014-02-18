@@ -159,7 +159,6 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
   // Y axis radious space
   var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
-//  var enought_bottom_space = ( ($(this.div_).height() + this.options.marker_distance[1]) < bottom  ) ? true : false;
 
   // X axis radious space
   var enought_right_space = ( this.options.width < left ) ? true : false;
@@ -187,7 +186,8 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
   // decide X position
   if( 
-    enought_left_space && enought_right_space
+    (enought_left_space && enought_right_space) ||
+    click_ev == true  // is a click event
   ){
     var final_peak_point_x = canvas_marker_point.x - this.options.width/2 ;
   }
@@ -213,8 +213,28 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
       this.options.map.setCenter( 
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x, 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x , 
             overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y - $(this.div_).height()
+          )
+        )
+      );
+    }
+    if(!enought_left_space) {
+      this.options.map.setCenter( 
+        overlayProjection.fromContainerPixelToLatLng(
+          new google.maps.Point(
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x + $(this.div_).width()/1.5 , 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y 
+          )
+        )
+      );
+    }
+    if(!enought_right_space) {
+      this.options.map.setCenter( 
+        overlayProjection.fromContainerPixelToLatLng(
+          new google.maps.Point(
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x - $(this.div_).width()/1.5 , 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y 
           )
         )
       );
