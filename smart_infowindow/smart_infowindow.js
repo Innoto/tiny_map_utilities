@@ -10,6 +10,7 @@ function smart_infowindow(opts) {
     map : false,
 
     background_color: '#fff',
+    box_shadow: '0px 0px 9px #888',
     peak_image: false,
     max_height: 400,
     width: 300,
@@ -61,7 +62,7 @@ smart_infowindow.prototype.openClick = function( marker, content ) {
 // Private Setters
 //
 smart_infowindow.prototype.SetStyles = function() {
-  $(this.div_).css('box-shadow', '0px 0px 10px #888' );
+  $(this.div_).css('box-shadow', this.options.box_shadow );
   $(this.div_).css('background-color', this.options.background_color );
   $(this.div_).css('width', this.options.width );
   $(this.div_).css('max-height', this.options.max_height );
