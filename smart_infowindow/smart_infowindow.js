@@ -16,11 +16,11 @@ function smart_infowindow(opts) {
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:20,
-    marker_distance: [38,0], // [top, bottom]
+    marker_distance: [30,-5], // [top, bottom]
 
     peak_img: 'smart_infowindow/peak.png',
-    peak_img_width: 11,
-    peak_img_height: 7
+    peak_img_width: 13,
+    peak_img_height: 11
   });
   $.extend(true, this.options, opts);
 
