@@ -14,6 +14,7 @@ function smart_infowindow(opts) {
     max_height: 400,
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
+    corner_distance:20,
     marker_distance: [41,0] // [top, bottom]
   });
   $.extend(true, this.options, opts);
@@ -126,11 +127,11 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   else
   if(enought_right_space && !enought_left_space)
   {
-    var final_peak_point_x = canvas_marker_point.x - this.options.width;
+    var final_peak_point_x = canvas_marker_point.x - this.options.width + this.options.corner_distance ;
   }
   else
   {
-    var final_peak_point_x = canvas_marker_point.x ;
+    var final_peak_point_x = canvas_marker_point.x - this.options.corner_distance ;
   }
 
 
