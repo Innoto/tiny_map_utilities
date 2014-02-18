@@ -15,7 +15,7 @@ function smart_infowindow(opts) {
     background_color: '#fff',
     box_shadow: '0px 0px 9px #888',
     peak_image: false,
-    max_height: 400,
+    max_height: 350,
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:30,
@@ -40,15 +40,17 @@ smart_infowindow.prototype.onAdd = function() {
   $(div).css('display' , 'none');
   $(div).css('position' , 'absolute');
   $(div).html(  "<div class='top-space'></div>" +
-                "<div class='box'>asdf</div>" +
+                "<div class='box' style='overflow:auto;'></div>" +
                 "<div class='bottom-space'></div>"
               );
 
   this.div_ = div;
 
   // Add the element to the "overlayLayer" pane.
-  var panes = this.getPanes();
-  panes.floatPane.appendChild(this.div_);
+//  var panes = this.getPanes();
+
+  this.getPanes()['floatPane'].appendChild(this.div_);
+//  panes.floatPane.appendChild(this.div_);
 
 };
 
@@ -111,8 +113,8 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
     var click = true;
 
   this.SetContent(content);
-  this.SetPosition(marker, click);
   this.SetStyles();
+  this.SetPosition(marker, click);
 };
 
 
@@ -129,11 +131,9 @@ smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('background-color', this.options.background_color );
   $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
-  $(this.div_).find('.box').css('max-height', this.options.max_height );
   $(this.div_).show();
 
   s_i_that = this;
-  //google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
 };
 
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
