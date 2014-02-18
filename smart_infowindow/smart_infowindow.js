@@ -18,7 +18,7 @@ function smart_infowindow(opts) {
     max_height: 400,
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
-    corner_distance:20,
+    corner_distance:30,
     marker_distance: [30,-10], // [top, bottom]
 
     peak_img: current_path + 'img/peak.png',
