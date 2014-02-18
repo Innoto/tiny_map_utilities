@@ -6,6 +6,9 @@ smart_infowindow.prototype = new google.maps.OverlayView();
 /** @constructor */
 function smart_infowindow(opts) {
 
+  // obtain paths
+  var current_path = $('script[src$="/smart_infowindow.js"]').attr('src').replace("smart_infowindow.js", "");
+
   this.options = new Object({
     map : false,
 
@@ -18,7 +21,7 @@ function smart_infowindow(opts) {
     corner_distance:20,
     marker_distance: [30,-10], // [top, bottom]
 
-    peak_img: 'smart_infowindow/peak.png',
+    peak_img: current_path + 'img/peak.png',
     peak_img_width: 13,
     peak_img_height: 11
   });
