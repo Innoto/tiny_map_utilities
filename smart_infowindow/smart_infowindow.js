@@ -200,8 +200,6 @@ smart_infowindow.prototype.SetPeak = function(v, h) {
     current_peak_container.html(peak_img);
   }
 
-  current_peak_container.css('height', current_peak_container.find('img').height())
-
   // set horizontal position
   if( h == -1 ){
     var peak_margin_left = this.options.width - this.options.corner_distance - this.options.peak_img_width/2;
