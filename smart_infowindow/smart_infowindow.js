@@ -161,8 +161,8 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
 
   // X axis radious space
-  var enought_left_space = ( this.options.width < left ) ? true : false;
-  var enought_right_space = ( this.options.width < right ) ? true : false;
+  var enought_left_space = ( this.options.width/2 < left ) ? true : false;
+  var enought_right_space = ( this.options.width/2 < right ) ? true : false;
 
 
   var peak_v = -1;
