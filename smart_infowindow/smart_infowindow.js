@@ -109,7 +109,6 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
       this.options.allways_top == true || // hover is locked, allways up direction
       enought_top_space || // have enought space
       click_ev == true  // is a click event
-
   ){
     var final_peak_point_y = canvas_marker_point.y - $(this.div_).height() - this.options.marker_distance[0];
   }
