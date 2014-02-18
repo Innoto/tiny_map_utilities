@@ -180,6 +180,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
 smart_infowindow.prototype.SetPeak = function(v, h) {
 
+
   var peak_img = document.createElement('img');
   $(peak_img).attr('src', this.options.peak_img);
 
