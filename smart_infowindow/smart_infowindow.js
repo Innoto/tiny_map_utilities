@@ -16,7 +16,7 @@ function smart_infowindow(opts) {
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:20,
-    marker_distance: [30,-5], // [top, bottom]
+    marker_distance: [30,-10], // [top, bottom]
 
     peak_img: 'smart_infowindow/peak.png',
     peak_img_width: 13,
@@ -54,13 +54,29 @@ smart_infowindow.prototype.draw = function() {
 
 
 // hovers and clicks
-
-
 smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 
   s_i_that = this;
 
   google.maps.event.addListener(marker, evento, function( ){
+    if(evento === 'click') {
+
+    }
+    else
+    if(evento === 'mouseover') {
+      marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
+        s_i_that.close();
+      });
+
+
+      $(s_i_that.div_).one('mouseenter' , function(){
+        google.maps.event.removeListener(marker_mouseout_event);
+        $(s_i_that.div_).one('mouseleave', function(){
+          s_i_that.close();
+        })
+      });
+    }
+
     s_i_that.open(marker, evento, content);
   });
 
@@ -78,6 +94,10 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
   this.SetStyles();
 };
 
+
+smart_infowindow.prototype.close = function( ) {
+  $(this.div_).hide();
+}
 
 
 //
