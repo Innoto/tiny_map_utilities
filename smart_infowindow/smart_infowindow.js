@@ -161,8 +161,8 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
 
   // X axis radious space
-  var enought_right_space = ( this.options.width < left ) ? true : false;
-  var enought_left_space = ( this.options.width < right ) ? true : false;
+  var enought_left_space = ( this.options.width < left ) ? true : false;
+  var enought_right_space = ( this.options.width < right ) ? true : false;
 
 
   var peak_v = -1;
@@ -186,13 +186,13 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
   // decide X position
   if( 
-    (enought_left_space && enought_right_space) ||
+    (enought_right_space && enought_left_space) ||
     click_ev == true  // is a click event
   ){
     var final_peak_point_x = canvas_marker_point.x - this.options.width/2 ;
   }
   else
-  if(enought_right_space && !enought_left_space)
+  if(enought_left_space && !enought_right_space)
   {
     var final_peak_point_x = canvas_marker_point.x - this.options.width + this.options.corner_distance ;
     peak_h = -1; // peak on left
@@ -219,7 +219,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
         )
       );
     }
-    if(!enought_left_space) {
+    if(!enought_right_space) {
       this.options.map.setCenter( 
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
@@ -229,7 +229,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
         )
       );
     }
-    if(!enought_right_space) {
+    if(!enought_left_space) {
       this.options.map.setCenter( 
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
