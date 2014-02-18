@@ -29,7 +29,6 @@ function smart_infowindow(opts) {
 
   this.div_ = false;
   this.setMap(this.options.map);
-
 }
 
 
@@ -48,15 +47,37 @@ smart_infowindow.prototype.onAdd = function() {
 
   // Add the element to the "overlayLayer" pane.
   var panes = this.getPanes();
-
-//  this.getPanes()['floatPane'].appendChild(this.div_);
   panes.floatPane.appendChild(this.div_);
 
+  // stop propagation of all events when into infowindow
+  google.maps.event.addDomListener(this.div_, 'mousedown', function(e){if (e.stopPropagation) e.stopPropagation();});   // cancels drag/click
+  google.maps.event.addDomListener(this.div_, 'click', function(e){if (e.stopPropagation) e.stopPropagation();});      // cancels click
+  google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
+  google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
 
-google.maps.event.addDomListener(this.div_, 'mousedown', function(e){if (e.stopPropagation) e.stopPropagation();});   // cancels drag/click
-google.maps.event.addDomListener(this.div_, 'click', function(e){if (e.stopPropagation) e.stopPropagation();});      // cancels click
-google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
-google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
+
+  //
+  // Here disable wheel zoom into infobox, create too the variable "is_on_infowindow", that makes
+
+  s_i_that = this;
+  is_on_inwfowindow = false;
+
+  // enter on infowindow and set true
+  $(s_i_that.div_).bind('mouseenter', function(){
+    is_on_inwfowindow = true;
+    s_i_that.options.map.setOptions({scrollwheel: false});
+  });
+       
+  // exit infowindow and set false
+  $(s_i_that.div_).bind('mouseleave',function(){
+    s_i_that.options.map.setOptions({scrollwheel: true});
+    is_on_inwfowindow = false;
+  });
+
+  //
+  //  when change zoom close infowindow
+  google.maps.event.addListener(this.options.map, 'zoom_changed', function(){s_i_that.close()});
+
 };
 
 smart_infowindow.prototype.draw = function() {
@@ -66,29 +87,20 @@ smart_infowindow.prototype.draw = function() {
 // hovers and clicks
 smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 
-  s_i_that = this;
+
+
+
 
   google.maps.event.addListener(marker, evento, function( ){
+
+
+
+
     if(evento === 'click') {
-      is_on_inwfowindow = false;
 
-
-      // enter on infowindow and set true
-      $(s_i_that.div_).one('mouseenter', function(){
-          is_on_inwfowindow = true;
-      });
-     
-      // exit infowindow and set false
-      $(s_i_that.div_).mouseleave(function(){
-          is_on_inwfowindow = false;
-      });
-      
       // if click on map check if is mouse is now on infowindow
-      if(typeof map_click_event != 'undefined')  google.maps.event.removeListener(map_click_event);
-      map_click_event = google.maps.event.addListener(s_i_that.options.map, 'click', function(){
-        if(!is_on_inwfowindow) {
+      map_click_event = google.maps.event.addListenerOnce(s_i_that.options.map, 'click', function(){
           s_i_that.close();
-        }
       });
     }
     else
