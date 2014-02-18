@@ -14,7 +14,7 @@ function smart_infowindow(opts) {
     max_height: 400,
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
-    marker_distance: [41,10] // [top, bottom]
+    marker_distance: [41,0] // [top, bottom]
   });
   $.extend(true, this.options, opts);
 
@@ -117,17 +117,41 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   }
 
   // decide X position
+  if( 
+    enought_left_space && enought_right_space
+  ){
+    console.debug("medio")
+    var final_peak_point_x = canvas_marker_point.x - this.options.width/2 ;
+  }
+  else
+  if(enought_right_space && !enought_left_space)
+  {
+    var final_peak_point_x = canvas_marker_point.x - this.options.width;
+  }
+  else
+  {
+    var final_peak_point_x = canvas_marker_point.x ;
+  }
 
 
 
   // center map when is a click event
   if(click_ev == true) {
-      this.options.map.setCenter( marker.getPosition() );
+    if(!enought_top_space) {
+      this.options.map.setCenter( 
+        overlayProjection.fromContainerPixelToLatLng(
+          new google.maps.Point(
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x, 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y - $(this.div_).height()
+          )
+        )
+      );
+    }
   }
 
-
+  // final infowindow position
   this.div_.style.top = final_peak_point_y + 'px';
-  this.div_.style.left = ( canvas_marker_point.x - this.options.width/2 ) + 'px';
+  this.div_.style.left = final_peak_point_x + 'px';
 
 };
 
