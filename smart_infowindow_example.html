@@ -12,6 +12,8 @@
   <script type="text/javascript" src="smart_infowindow/smart_infowindow.js"></script>
   <script type="text/javascript">
 
+
+
       var json_data = false;
       var mapa = false;
 
@@ -40,23 +42,15 @@
 
         google.maps.event.addDomListener(window, 'load', function( ){
 
-          var marker_latlng = new google.maps.LatLng(62.281819, -150.287132);
-          var marker = new google.maps.Marker({
-            position: marker_latlng,
-            map: mapa,
-          });
+        var marker_latlng = new google.maps.LatLng(62.281819, -150.287132);
+        var marker = new google.maps.Marker({
+          position: marker_latlng,
+          map: mapa,
+        });
         
-          s_iw = new smart_infowindow({map:mapa});
-
-
-          google.maps.event.addListener(marker, 'click', function( ){
-            s_iw.openClick(marker, "<br><br>click<br><br>");
-          });         
-
-          google.maps.event.addListener(marker, 'mouseover', function( ){
-            s_iw.openHover(marker,"<br><br>hover<br><br>");
-          });   
-
+        s_iw = new smart_infowindow({map:mapa});
+        s_iw.MarkerEvent(marker, 'mouseover' ,"<br><br>hover<br><br>");
+        
         });
       }
 

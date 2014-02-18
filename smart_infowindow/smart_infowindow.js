@@ -55,17 +55,29 @@ smart_infowindow.prototype.draw = function() {
 
 // hovers and clicks
 
-smart_infowindow.prototype.openHover = function( marker, content ) {
+
+smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
+
+  s_i_that = this;
+
+  google.maps.event.addListener(marker, evento, function( ){
+    s_i_that.open(marker, evento, content);
+  });
+
+}
+
+smart_infowindow.prototype.open = function( marker, evento, content ) {
+
+  var click = false
+
+  if(evento == 'click')
+    var click = true;
+
   this.SetContent(content);
-  this.SetPosition(marker, false);
+  this.SetPosition(marker, click);
   this.SetStyles();
 };
 
-smart_infowindow.prototype.openClick = function( marker, content ) {
-  this.SetContent(content);
-  this.SetPosition(marker, true);
-  this.SetStyles();
-};
 
 
 //
@@ -80,7 +92,7 @@ smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).show();
 
   s_i_that = this;
-  google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
+  //google.maps.event.addListener(this.options.map, 'click', function(){  $(s_i_that.div_).hide(); })
 };
 
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
