@@ -28,8 +28,13 @@ function smart_infowindow(opts) {
 smart_infowindow.prototype.onAdd = function() {
 
   var div = document.createElement('div');
+  $(div).addClass('smart_infowindow');
   $(div).css('display' , 'none');
   $(div).css('position' , 'absolute');
+  $(div).html(  "<div class='top-space'></div>" +
+                "<div class='box'>asdf</div>" +
+                "<div class='bottom-space'></div>"
+              );
 
   this.div_ = div;
 
@@ -62,10 +67,10 @@ smart_infowindow.prototype.openClick = function( marker, content ) {
 // Private Setters
 //
 smart_infowindow.prototype.SetStyles = function() {
-  $(this.div_).css('box-shadow', this.options.box_shadow );
-  $(this.div_).css('background-color', this.options.background_color );
+  $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
+  $(this.div_).find('.box').css('background-color', this.options.background_color );
   $(this.div_).css('width', this.options.width );
-  $(this.div_).css('max-height', this.options.max_height );
+  $(this.div_).find('.box').css('max-height', this.options.max_height );
 
   $(this.div_).show();
 
@@ -105,6 +110,9 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var enought_left_space = ( this.options.width < right ) ? true : false;
 
 
+  var peak_v = -1;
+  var peak_h = 0;
+
   // decide Y position
   if( 
       this.options.allways_top == true || // hover is locked, allways up direction
@@ -112,28 +120,33 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
       click_ev == true  // is a click event
   ){
     var final_peak_point_y = canvas_marker_point.y - $(this.div_).height() - this.options.marker_distance[0];
+    peak_v = -1; // peak vertical on bottom
   }
   else {
     var final_peak_point_y = canvas_marker_point.y + this.options.marker_distance[1] ;
+    peak_v = 1; // peak vertical on top
   }
 
   // decide X position
   if( 
     enought_left_space && enought_right_space
   ){
-    console.debug("medio")
     var final_peak_point_x = canvas_marker_point.x - this.options.width/2 ;
   }
   else
   if(enought_right_space && !enought_left_space)
   {
     var final_peak_point_x = canvas_marker_point.x - this.options.width + this.options.corner_distance ;
+    peak_h = -1; // peak on left
   }
   else
   {
     var final_peak_point_x = canvas_marker_point.x - this.options.corner_distance ;
+    peak_h = 1; // peak on right
   }
 
+  // set peak position
+  this.SetPeak(peak_v, peak_h);
 
 
   // center map when is a click event
@@ -156,8 +169,52 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
 };
 
+
+smart_infowindow.prototype.SetPeak = function(v, h) {
+
+  //var peak_element = "<img src='smart_infowindow/peak.png' />";
+  this.peak_img = document.createElement('img');
+
+
+  $(this.peak_img).attr('src', 'smart_infowindow/peak.png');
+  this.peak_img_width = $(this.peak_img).width();
+
+  $(this.div_).find('.top-space').html("");
+  $(this.div_).find('.bottom-space').html("");
+
+  // set to or bottom position (and rotate with jquery rotate library)
+  if(v==1){
+    var current_peak_container = $(this.div_).find('.top-space');
+    current_peak_container.html(this.peak_img).find('img').rotate(180);
+  }
+  else{
+    var current_peak_container = $(this.div_).find('.bottom-space');
+    current_peak_container.html(this.peak_img);
+  }
+
+  current_peak_container.css('height', current_peak_container.find('img').height())
+
+//console.debug(smart_infowindow_this.peak_img_width, current_peak_container.find('img').height())
+
+  // set horizontal position
+  if( h == -1 ){
+    var peak_margin_left = this.options.width - this.options.corner_distance - this.peak_img_width/2;
+  }
+  else 
+  if( h == 1)
+  {
+    var peak_margin_left = this.options.corner_distance - this.peak_img_width/2;
+  }
+  else {
+    var peak_margin_left = this.options.width/2  - this.peak_img_width/2;
+  }
+
+  current_peak_container.find('img').css('margin-left', peak_margin_left+'px');
+};
+
+
 smart_infowindow.prototype.SetContent = function(content) {
-  $(this.div_).html(content);
+  $(this.div_).find('.box').html( content );
 };
 
 
