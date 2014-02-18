@@ -47,11 +47,16 @@ smart_infowindow.prototype.onAdd = function() {
   this.div_ = div;
 
   // Add the element to the "overlayLayer" pane.
-//  var panes = this.getPanes();
+  var panes = this.getPanes();
 
-  this.getPanes()['floatPane'].appendChild(this.div_);
-//  panes.floatPane.appendChild(this.div_);
+//  this.getPanes()['floatPane'].appendChild(this.div_);
+  panes.floatPane.appendChild(this.div_);
 
+
+google.maps.event.addDomListener(this.div_, 'mousedown', function(e){if (e.stopPropagation) e.stopPropagation();});   // cancels drag/click
+google.maps.event.addDomListener(this.div_, 'click', function(e){if (e.stopPropagation) e.stopPropagation();});      // cancels click
+google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
+google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
 };
 
 smart_infowindow.prototype.draw = function() {
