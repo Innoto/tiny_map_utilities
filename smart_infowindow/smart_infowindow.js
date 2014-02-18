@@ -56,10 +56,11 @@ smart_infowindow.prototype.onAdd = function() {
   google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
 
 
+  s_i_that = this;
+
   //
   // Here disable wheel zoom into infobox, create too the variable "is_on_infowindow", that makes
-
-  s_i_that = this;
+  
   is_on_inwfowindow = false;
 
   // enter on infowindow and set true
@@ -87,14 +88,7 @@ smart_infowindow.prototype.draw = function() {
 // hovers and clicks
 smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 
-
-
-
-
   google.maps.event.addListener(marker, evento, function( ){
-
-
-
 
     if(evento === 'click') {
 
