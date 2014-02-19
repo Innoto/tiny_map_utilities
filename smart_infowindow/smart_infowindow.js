@@ -55,6 +55,7 @@ smart_infowindow.prototype.onAdd = function() {
   google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
   google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
   google.maps.event.addDomListener(this.div_, 'mouseout', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
+  google.maps.event.addDomListener(this.div_, 'mouseleave', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
 
 
   s_i_that = this;
@@ -68,15 +69,16 @@ smart_infowindow.prototype.onAdd = function() {
   $(s_i_that.div_).bind('mouseenter', function(){
     is_on_infowindow = true;
     s_i_that.options.map.setOptions({scrollwheel: false});
-    console.debug("set is on:"+is_on_infowindow)
   });
-       
+  
+  click_event_opened = false;
+
   // exit infowindow and set false
   $(s_i_that.div_).bind('mouseleave',function(){
     s_i_that.options.map.setOptions({scrollwheel: true});
     is_on_infowindow = false;
-    console.debug("set is on:"+is_on_infowindow)
-            s_i_that.close();
+    if(click_event_opened == false)
+      s_i_that.close();
   });
 
   //
@@ -103,34 +105,31 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
   var click = false
 
   if(evento === 'click' ) {
-
+    click_event_opened = true;
     var click = true;
     // if click on map check if is mouse is now on infowindow
     map_click_event = google.maps.event.addListenerOnce(s_i_that.options.map, 'click', function(){
       s_i_that.close();
+      click_event_opened = false;
     });
   }
   else
-  if(evento === 'mouseover'  ) {
+  if(evento === 'mouseover' ) {
 
     marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
       if(is_on_infowindow == false )
         s_i_that.close();
     });
-    // init event when mouse enter into infowindow
-/*    $(s_i_that.div_).one('mouseenter' , function(){
-      google.maps.event.removeListener(marker_mouseout_event);
-      $(s_i_that.div_).one('mouseleave', function(e){
-        e.stop();
-
-      })
-    });*/
   }
 
-  // lets open infowindow    
-  this.SetContent(content);
-  this.SetStyles();
-  this.SetPosition(marker, click);
+
+  if( is_on_infowindow == false) {
+    // lets open infowindow    
+    this.SetContent(content);
+    this.SetStyles();
+    this.SetPosition(marker, click);
+  }
+
 };
 
 
@@ -316,7 +315,7 @@ smart_infowindow.prototype.SetContent = function(content) {
 //
 
 // @distances_array : [top, bottom]
-smart_infowindow.prototype.SetMarkerDistances = function( distances_array ) {
+smart_infowindow.prototype.SetMarkerDistances = function( marker_distance ) {
   this.options.marker_distance = marker_distance; 
 };
 

@@ -53,8 +53,10 @@
           //cluster_radious: 10
           hover_event: function(marker, data) {
 
-
-
+            if($(data).length == 1 )
+              iwindow.SetMarkerDistances([4,4])
+            else
+              iwindow.SetMarkerDistances([8,8])
             iwindow.open(marker, 'mouseover' ,"<br>molame<br>");
           }
         })
