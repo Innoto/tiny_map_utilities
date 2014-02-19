@@ -29,8 +29,8 @@ function  marker_clusterer( opts ) {
     icon_disabled_diameter: 10,    
     icon_disabled: current_path+"img/point_small_disabled.png",
 
-    hover_event: function(ob){},
-    click_event: function(ob){}
+    hover_event: function(marker, data){},
+    click_event: function(marker, data){}
   });
   $.extend(true, this.options, opts);
 
@@ -360,7 +360,7 @@ function  marker_clusterer( opts ) {
         marker_click_return.push(that.json_points[e]);
       });
 
-      that.options.click_event(marker_click_return);
+      that.options.click_event(marker, marker_click_return);
     });
 
     google.maps.event.addListener(marker, 'mouseover', function(){
@@ -378,7 +378,7 @@ function  marker_clusterer( opts ) {
         marker_click_return.push(that.json_points[e]);
       });
 
-      that.options.hover_event(marker_click_return);
+      that.options.hover_event(marker, marker_click_return);
     });
 
     this.markers[marker_id] = marker;

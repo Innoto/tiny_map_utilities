@@ -23,6 +23,7 @@
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.js"></script>
   <script type="text/javascript" src="marker_clusterer/marker_clusterer.js"></script>
+  <script type="text/javascript" src="http://jqueryrotate.googlecode.com/svn/trunk/jQueryRotate.js"></script>  
   <script type="text/javascript" src="smart_infowindow/smart_infowindow.js"></script>
   <script type="text/javascript">
 
@@ -40,14 +41,21 @@
         carga_json= new time_calc();
         load_json();
 
+        iwindow = new smart_infowindow({
+          map:mapa,
+          marker_distance: [8,8], // [top, bottom]
+        });
 
         cluster_manager =  new marker_clusterer({
           map: mapa,
           json_data: json_data,
           zoom_range : [11,17],
           //cluster_radious: 10
-          hover_event: function(ob) {
-            console.debug(ob)
+          hover_event: function(marker, data) {
+
+
+
+            iwindow.open(marker, 'mouseover' ,"<br>molame<br>");
           }
         })
 

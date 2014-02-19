@@ -54,6 +54,7 @@ smart_infowindow.prototype.onAdd = function() {
   google.maps.event.addDomListener(this.div_, 'click', function(e){if (e.stopPropagation) e.stopPropagation();});      // cancels click
   google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
   google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
+  google.maps.event.addDomListener(this.div_, 'mouseout', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
 
 
   s_i_that = this;
@@ -61,18 +62,21 @@ smart_infowindow.prototype.onAdd = function() {
   //
   // Here disable wheel zoom into infobox, create too the variable "is_on_infowindow", that makes
   
-  is_on_inwfowindow = false;
+  is_on_infowindow = false;
 
   // enter on infowindow and set true
   $(s_i_that.div_).bind('mouseenter', function(){
-    is_on_inwfowindow = true;
+    is_on_infowindow = true;
     s_i_that.options.map.setOptions({scrollwheel: false});
+    console.debug("set is on:"+is_on_infowindow)
   });
        
   // exit infowindow and set false
   $(s_i_that.div_).bind('mouseleave',function(){
     s_i_that.options.map.setOptions({scrollwheel: true});
-    is_on_inwfowindow = false;
+    is_on_infowindow = false;
+    console.debug("set is on:"+is_on_infowindow)
+            s_i_that.close();
   });
 
   //
@@ -89,7 +93,6 @@ smart_infowindow.prototype.draw = function() {
 smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 
   google.maps.event.addListener(marker, evento, function( ){
-
     s_i_that.open(marker, evento, content);
   });
 
@@ -98,8 +101,9 @@ smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 smart_infowindow.prototype.open = function( marker, evento, content ) {
 
   var click = false
-  
-  if(evento === 'click') {
+
+  if(evento === 'click' ) {
+
     var click = true;
     // if click on map check if is mouse is now on infowindow
     map_click_event = google.maps.event.addListenerOnce(s_i_that.options.map, 'click', function(){
@@ -107,17 +111,20 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
     });
   }
   else
-  if(evento === 'mouseover') {
+  if(evento === 'mouseover'  ) {
+
     marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
-      s_i_that.close();
+      if(is_on_infowindow == false )
+        s_i_that.close();
     });
     // init event when mouse enter into infowindow
-    $(s_i_that.div_).one('mouseenter' , function(){
+/*    $(s_i_that.div_).one('mouseenter' , function(){
       google.maps.event.removeListener(marker_mouseout_event);
-      $(s_i_that.div_).one('mouseleave', function(){
-        s_i_that.close();
+      $(s_i_that.div_).one('mouseleave', function(e){
+        e.stop();
+
       })
-    });
+    });*/
   }
 
   // lets open infowindow    
