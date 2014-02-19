@@ -14,5 +14,3 @@ Features:
  * Change cluster radious
  * Set marker icons and radious
  
-
-![marker_clusteterer_lite](https://f.cloud.github.com/assets/4938295/2140186/b36f23ee-9348-11e3-881b-a5eb70bc6960.png)
