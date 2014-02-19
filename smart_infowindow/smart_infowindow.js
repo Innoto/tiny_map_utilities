@@ -90,27 +90,6 @@ smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 
   google.maps.event.addListener(marker, evento, function( ){
 
-    if(evento === 'click') {
-
-      // if click on map check if is mouse is now on infowindow
-      map_click_event = google.maps.event.addListenerOnce(s_i_that.options.map, 'click', function(){
-          s_i_that.close();
-      });
-    }
-    else
-    if(evento === 'mouseover') {
-      marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
-        s_i_that.close();
-      });
-      // init event when mouse enter into infowindow
-      $(s_i_that.div_).one('mouseenter' , function(){
-        google.maps.event.removeListener(marker_mouseout_event);
-        $(s_i_that.div_).one('mouseleave', function(){
-          s_i_that.close();
-        })
-      });
-    }
-
     s_i_that.open(marker, evento, content);
   });
 
@@ -119,10 +98,29 @@ smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
 smart_infowindow.prototype.open = function( marker, evento, content ) {
 
   var click = false
-
-  if(evento == 'click')
+  
+  if(evento === 'click') {
     var click = true;
+    // if click on map check if is mouse is now on infowindow
+    map_click_event = google.maps.event.addListenerOnce(s_i_that.options.map, 'click', function(){
+      s_i_that.close();
+    });
+  }
+  else
+  if(evento === 'mouseover') {
+    marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
+      s_i_that.close();
+    });
+    // init event when mouse enter into infowindow
+    $(s_i_that.div_).one('mouseenter' , function(){
+      google.maps.event.removeListener(marker_mouseout_event);
+      $(s_i_that.div_).one('mouseleave', function(){
+        s_i_that.close();
+      })
+    });
+  }
 
+  // lets open infowindow    
   this.SetContent(content);
   this.SetStyles();
   this.SetPosition(marker, click);
