@@ -17,7 +17,7 @@ function  marker_clusterer( opts ) {
     map : false,
     filter_list: [],
     show_disabled_points: true,
-    cluster_radious : 20, // in pixels
+    cluster_radious : 15, // in pixels
 
     icon_big_elements: 6, // use this icon when cluster more than x elements
     icon_big_diameter: 20,
@@ -27,8 +27,10 @@ function  marker_clusterer( opts ) {
     icon_small_diameter: 10,
     icon_small: current_path+"img/point_small.png",
     icon_disabled_diameter: 10,    
-    icon_disabled: current_path+"img/point_small_disabled.png"
+    icon_disabled: current_path+"img/point_small_disabled.png",
 
+    hover_event: function(ob){},
+    click_event: function(ob){}
   });
   $.extend(true, this.options, opts);
 
@@ -333,13 +335,50 @@ function  marker_clusterer( opts ) {
 
 
   this.add_marker = function( marker_id ) {
-
+    that = this;
     var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
       
     var marker = new google.maps.Marker({
       position: marker_latlng,
       map: this.options.map,
       visible:false
+    });
+
+
+    google.maps.event.addListener(marker, 'click', function(){
+      // set zoomlevels
+      zoomlevel = that.options.map.getZoom();
+      
+      if(zoomlevel > that.options.zoom_range[1])  
+        zoomlevel = that.options.zoom_range[1];
+      else
+      if(zoomlevel < that.options.zoom_range[0])  
+        zoomlevel = that.options.zoom_range[0];
+
+      marker_click_return = [];
+      $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
+        marker_click_return.push(that.json_points[e]);
+      });
+
+      that.options.click_event(marker_click_return);
+    });
+
+    google.maps.event.addListener(marker, 'mouseover', function(){
+      // set zoomlevels
+      zoomlevel = that.options.map.getZoom();
+      
+      if(zoomlevel > that.options.zoom_range[1])  
+        zoomlevel = that.options.zoom_range[1];
+      else
+      if(zoomlevel < that.options.zoom_range[0])  
+        zoomlevel = that.options.zoom_range[0];
+
+      marker_click_return = [];
+      $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
+        marker_click_return.push(that.json_points[e]);
+      });
+
+      that.options.hover_event(marker_click_return);
     });
 
     this.markers[marker_id] = marker;

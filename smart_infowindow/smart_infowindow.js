@@ -19,7 +19,7 @@ function smart_infowindow(opts) {
     width: 300,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:30,
-    marker_distance: [30,-10], // [top, bottom]
+    marker_distance: [40,-10], // [top, bottom]
 
     peak_img: current_path + 'img/peak.png',
     peak_img_width: 13,
