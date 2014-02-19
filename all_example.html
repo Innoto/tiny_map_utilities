@@ -44,6 +44,7 @@
         iwindow = new smart_infowindow({
           map:mapa,
           width: 150,
+          max_height:200,
           marker_distance: [8,8], // [top, bottom]
         });
 
@@ -69,7 +70,7 @@
                 "<div><b>" +
                 "Element number:" + e.id +   
                 "</b></div>" +
-                "<div> Latitude: ,Longitude" +
+                "<div> Latitude:"+ e.latitude +" ,Longitude:" + e.longitude
                 "</div>";
        
             });

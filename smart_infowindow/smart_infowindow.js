@@ -11,16 +11,15 @@ function smart_infowindow(opts) {
 
   this.options = new Object({
     map : false,
-
+    map_scrollwhell_is_enabled: false,
     background_color: '#fff',
     box_shadow: '0px 0px 9px #888',
     peak_image: false,
-    max_height: 350,
-    width: 300,
+    max_height: 200,
+    width: 200,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:30,
     marker_distance: [40,-10], // [top, bottom]
-
     peak_img: current_path + 'img/peak.png',
     peak_img_width: 13,
     peak_img_height: 11
@@ -75,7 +74,7 @@ smart_infowindow.prototype.onAdd = function() {
 
   // exit infowindow and set false
   $(s_i_that.div_).bind('mouseleave',function(){
-    s_i_that.options.map.setOptions({scrollwheel: true});
+    s_i_that.options.map.setOptions({scrollwheel: s_i_that.options.map_scrollwhell_is_enabled});
     is_on_infowindow = false;
     if(click_event_opened == false)
       s_i_that.close();
@@ -147,6 +146,14 @@ smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('padding', '5px');
   $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
+  $(this.div_).find('.box').css('height', 'auto')
+
+  if( $(this.div_).height() > this.options.max_height ) {
+    $(this.div_).find('.box').height(this.options.max_height)
+  }
+
+
+
 
   s_i_that = this;
 };
