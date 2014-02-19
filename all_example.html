@@ -43,6 +43,7 @@
 
         iwindow = new smart_infowindow({
           map:mapa,
+          width: 150,
           marker_distance: [8,8], // [top, bottom]
         });
 
@@ -54,10 +55,26 @@
           hover_event: function(marker, data) {
 
             if($(data).length == 1 )
-              iwindow.SetMarkerDistances([4,4])
+              iwindow.SetMarkerDistances([4,4]);
+            else 
+            if ($(data).length > 6) 
+              iwindow.SetMarkerDistances([10,10]);
             else
-              iwindow.SetMarkerDistances([8,8])
-            iwindow.open(marker, 'mouseover' ,"<br>molame<br>");
+              iwindow.SetMarkerDistances([8,8]);
+
+            var infocontent = "";
+            $(data).each( function(i,e) {
+              infocontent = infocontent+
+                "<div>" +
+                "<div><b>" +
+                "Element number:" + e.id +   
+                "</b></div>" +
+                "<div> Latitude: ,Longitude" +
+                "</div>";
+       
+            });
+
+            iwindow.open(marker, 'mouseover' , infocontent);
           }
         })
 

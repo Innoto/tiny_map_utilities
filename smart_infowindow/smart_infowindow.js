@@ -93,11 +93,9 @@ smart_infowindow.prototype.draw = function() {
 
 // hovers and clicks
 smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
-
   google.maps.event.addListener(marker, evento, function( ){
     s_i_that.open(marker, evento, content);
   });
-
 }
 
 smart_infowindow.prototype.open = function( marker, evento, content ) {
@@ -124,10 +122,12 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
 
 
   if( is_on_infowindow == false) {
-    // lets open infowindow    
+    // lets open infowindow 
+    this.close();
     this.SetContent(content);
     this.SetStyles();
     this.SetPosition(marker, click);
+    $(this.div_).show();
   }
 
 };
@@ -144,9 +144,9 @@ smart_infowindow.prototype.close = function( ) {
 smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
   $(this.div_).find('.box').css('background-color', this.options.background_color );
+  $(this.div_).find('.box').css('padding', '5px');
   $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
-  $(this.div_).show();
 
   s_i_that = this;
 };
@@ -177,6 +177,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
   // Y axis radious space
   var enought_top_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < top ) ? true : false;
+  var enought_bottom_space = ( ($(this.div_).height() + this.options.marker_distance[0]) < bottom ) ? true : false;
 
   // X axis radious space
   var enought_left_space = ( this.options.width/2 < left ) ? true : false;
@@ -190,6 +191,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   if( 
       this.options.allways_top == true || // hover is locked, allways up direction
       enought_top_space || // have enought space
+      !enought_bottom_space ||
       click_ev == true  // is a click event
   ){
     $(this.div_).find('.bottom-space').css('height', this.options.peak_img_height);
