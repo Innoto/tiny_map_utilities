@@ -13,6 +13,7 @@ function  marker_clusterer( opts ) {
 
   this.options = new Object({
     json_data : false,
+    data_structure: {id: 'id', lat: 'latitude', lng: 'longitude'},
     zoom_range : [10,19],
     map : false,
     filter_list: [],
@@ -90,7 +91,9 @@ function  marker_clusterer( opts ) {
   this.find_by_id = function( id ) {
     var real_id = false;
     $(this.json_points).each( function(i, e) {
-      if( id == e.id) {
+
+      e_id = eval("e." + that.options.data_structure.id); // know id dinamically
+      if( id == e_id) {
         real_id = i;
         return false;
       }
@@ -112,7 +115,7 @@ function  marker_clusterer( opts ) {
     $(that.json_points).each(function(i,e){
       for(zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
         var scale = Math.pow(2, zoomlevel);
-        pixels_latlng =  mapProjection.fromLatLngToPoint( new google.maps.LatLng(e.latitude, e.longitude) );
+        eval("pixels_latlng =  mapProjection.fromLatLngToPoint( new google.maps.LatLng(e."+that.options.data_structure.lat+", e."+that.options.data_structure.lng+") );");
         tree_row = { index: i, lat: parseInt(pixels_latlng.x*scale) , lng: parseInt(pixels_latlng.y*scale) };
         that.r_trees[zoomlevel].insert( tree_row );
       }
@@ -336,7 +339,7 @@ function  marker_clusterer( opts ) {
 
   this.add_marker = function( marker_id ) {
     that = this;
-    var marker_latlng = new google.maps.LatLng( this.json_points[marker_id].latitude, this.json_points[marker_id].longitude );
+    eval("var marker_latlng = new google.maps.LatLng( this.json_points[marker_id]."+that.options.data_structure.lat+", this.json_points[marker_id]."+that.options.data_structure.lng+" );");
       
     var marker = new google.maps.Marker({
       position: marker_latlng,
