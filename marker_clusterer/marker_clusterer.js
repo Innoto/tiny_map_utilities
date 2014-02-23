@@ -105,7 +105,7 @@ function  marker_clusterer( opts ) {
   this.create_r_trees = function() {
     that = this;
 
-    mapProjection = mapa.getProjection();
+    mapProjection = this.options.map.getProjection();
 
     // init or reset r trees
     for(var zoomlevel = this.options.zoom_range[0]; zoomlevel<=this.options.zoom_range[1] ;zoomlevel++) {
@@ -392,7 +392,7 @@ function  marker_clusterer( opts ) {
 
   this.show_markers = function() {
     that=this;
-    var zoomlevel = cluster_manager.options.map.getZoom();
+    var zoomlevel = that.options.map.getZoom();
     
 
 
