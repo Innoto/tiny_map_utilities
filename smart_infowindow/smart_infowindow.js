@@ -145,7 +145,7 @@ smart_infowindow.prototype.close = function( ) {
 smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
   $(this.div_).find('.box').css('background-color', this.options.background_color );
-  $(this.div_).find('.box .innerbox').css('padding', '5px');
+//  $(this.div_).find('.box .innerbox').css('padding', '5px');
   $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
   $(this.div_).find('.box .innerbox').css('height', 'auto')
