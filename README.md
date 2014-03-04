@@ -13,4 +13,6 @@ Features:
  * Set clustering range
  * Change cluster radious
  * Set marker icons and radious
+
+
  
