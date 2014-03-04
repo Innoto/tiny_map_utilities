@@ -38,7 +38,9 @@ smart_infowindow.prototype.onAdd = function() {
   $(div).css('display' , 'none');
   $(div).css('position' , 'absolute');
   $(div).html(  "<div class='top-space'></div>" +
-                "<div class='box' style='overflow:auto;'></div>" +
+                "<div class='box'>" +
+                  "<div class='innerbox' style='overflow:auto;'></div>" +
+                "</div>" +
                 "<div class='bottom-space'></div>"
               );
 
@@ -143,13 +145,13 @@ smart_infowindow.prototype.close = function( ) {
 smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
   $(this.div_).find('.box').css('background-color', this.options.background_color );
-  $(this.div_).find('.box').css('padding', '5px');
+  $(this.div_).find('.box .innerbox').css('padding', '5px');
   $(this.div_).css('cursor', 'default' );
   $(this.div_).css('width', this.options.width );
-  $(this.div_).find('.box').css('height', 'auto')
+  $(this.div_).find('.box .innerbox').css('height', 'auto')
 
   if( $(this.div_).height() > this.options.max_height ) {
-    $(this.div_).find('.box').height(this.options.max_height)
+    $(this.div_).find('.box .innerbox').height(this.options.max_height)
   }
 
 
@@ -315,7 +317,7 @@ smart_infowindow.prototype.SetPeak = function(v, h) {
 
 
 smart_infowindow.prototype.SetContent = function(content) {
-  $(this.div_).find('.box').html( content );
+  $(this.div_).find('.box .innerbox').html( content );
 };
 
 
