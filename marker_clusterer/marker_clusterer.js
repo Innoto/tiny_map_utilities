@@ -13,7 +13,7 @@ function  marker_clusterer( opts ) {
     data_structure: {id: 'id', lat: 'latitude', lng: 'longitude'},
     zoom_range : [10,19],
     map : false,
-    filter_list: {disabled: false, categories: []},
+    filter_list: {enabled_list: false, categories: []},
     show_disabled_points: true,
     cluster_radious : 15, // in pixels
 
@@ -225,12 +225,10 @@ function  marker_clusterer( opts ) {
   }
 
 
-  // if newlist == false show all markers
-  that.filter = function(filter_obj){
-
+  that.fastfilter = function(filter_obj){
     /*
       // FILTER OBJECT STRUCTURE
-      disabled: [ids array],
+      enabled_list: [ids array],
       categories:[
         {id: 'custom_name_1', important: true, elements: [ids_array1], hide:true },
         {id: 'custom_name_2', important: false, elements: [ids_array2] }
@@ -246,13 +244,56 @@ function  marker_clusterer( opts ) {
     that.options.filter_list = [];
     that.marker_categories = filter_obj.categories;
 
-    if(!filter_obj.disabled || typeof filter_obj.disabled == "undefined") { // all markers
+    if(!filter_obj.enabled_list || typeof filter_obj.enabled_list == "undefined") { // all markers
       $(that.json_points).each( function(i, e) {
           that.options.filter_list.push( i );
       });
     }
     else { // filter list
-      $(filter_obj.disabled).each( function(i,e) {
+      $(filter_obj.enabled_list).each( function(i,e) {
+        that.options.filter_list.push( that.find_by_id(e) );
+      });
+    }
+
+
+    this.debug_line("Convert ids");
+    that.cluster_points();
+    this.debug_line("Cluster points");
+    that.show_markers();
+    this.debug_line("Print markers");
+    that.debug_line_separator();
+
+  }
+
+
+  // if newlist == false show all markers
+  that.filter = function(filter_obj){
+
+    /*
+      // FILTER OBJECT STRUCTURE
+      enabled_list: [ids array],
+      categories:[
+        {id: 'custom_name_1', important: true, elements: [ids_array1], hide:true },
+        {id: 'custom_name_2', important: false, elements: [ids_array2] }
+      ]
+    */
+
+    var that=this;
+
+    // reset dbug timer
+    that.debug_reset_timer();
+
+    // convert into real array keys
+    that.options.filter_list = [];
+    that.marker_categories = filter_obj.categories;
+
+    if(!filter_obj.enabled_list || typeof filter_obj.enabled_list == "undefined") { // all markers
+      $(that.json_points).each( function(i, e) {
+          that.options.filter_list.push( i );
+      });
+    }
+    else { // filter list
+      $(filter_obj.enabled_list).each( function(i,e) {
         that.options.filter_list.push( that.find_by_id(e) );
       });
     }
