@@ -31,7 +31,9 @@ function  marker_clusterer( opts ) {
     zIndex:10,
 
     hover_event: function(marker, data){},
-    click_event: function(marker, data){}
+    click_event: function(marker, data){},
+
+    debug: false
   });
 
   $.extend(true, that.options, opts);
@@ -141,6 +143,8 @@ function  marker_clusterer( opts ) {
 
       that.ghost_cluster_points();
 
+      that.debug_set_initial_time();
+
       that.filter(that.options.filter_list); 
       //that.cluster_points(); 
       //that.show_markers()    
@@ -234,6 +238,10 @@ function  marker_clusterer( opts ) {
     */
 
     var that=this;
+
+    // reset dbug timer
+    that.debug_reset_timer();
+
     // convert into real array keys
     that.options.filter_list = [];
     that.marker_categories = filter_obj.categories;
@@ -250,12 +258,12 @@ function  marker_clusterer( opts ) {
     }
 
 
-
-
-
-
+    this.debug_line("Convert ids");
     that.cluster_points();
+    this.debug_line("Cluster points");
     that.show_markers();
+    this.debug_line("Print markers");
+    that.debug_line_separator();
 
   }
 
@@ -633,6 +641,94 @@ function  marker_clusterer( opts ) {
     that.show_markers();
   }
 
+
+  /***********************
+   *    DEBUG SUB-CLASS
+   ***********************/
+
+  that.debug_timer = function() {
+    var that = this;
+        
+    if(that.options.debug == true) {
+
+      that.debug_debugDiv = document.createElement('div');
+      that.debug_debugTitle = document.createElement('h2');
+      that.debug_mainTimes = document.createElement('div');      
+      that.debug_clusteringTimes = document.createElement('div');            
+
+      $(that.debug_debugTitle).html("Marker clusterer debug");
+
+      $(that.debug_debugDiv).append(that.debug_debugTitle);
+      $(that.debug_debugDiv).append(that.debug_mainTimes);
+      $(that.debug_debugDiv).append(that.debug_clusteringTimes);
+      $("body").append(that.debug_debugDiv);
+
+
+
+      $(that.debug_debugDiv).addClass("marker_clusterer_debug");
+      $(that.debug_mainTimes).addClass("marker_clusterer_debug");      
+
+
+      $(that.debug_debugDiv).css('width','180px');
+      $(that.debug_debugDiv).css('max-height','400px');
+      $(that.debug_debugDiv).css('min-height', '100px');
+      $(that.debug_debugDiv).css('position','absolute');
+      $(that.debug_debugDiv).css('right','0px');
+      $(that.debug_debugDiv).css('bottom','0px');
+      $(that.debug_debugDiv).css('z-index','1110');
+      $(that.debug_debugDiv).css('padding','10px');
+      $(that.debug_debugDiv).css('font-size','0.7em');
+      $(that.debug_debugDiv).css('overflow','auto');
+      $(that.debug_debugDiv).find('div').css('margin-top', '4px');
+
+      $(that.debug_debugDiv).css('background-color','white');
+
+      console.log("marker clusterer: debug_enabled")
+      that.debug_started_at = false;
+      that.debug_started_at = that.debug_getdate();
+
+    }
+  }
+
+  that.debug_reset_timer = function(){
+    if(that.options.debug == true)
+      that.debug_started_at = that.debug_getdate();
+  }
+
+  that.debug_line_separator = function(){
+    if(that.options.debug == true)
+      $(that.debug_clusteringTimes).prepend("<br>");
+  }  
+
+  that.debug_line = function(desc) {
+    var that = this;
+    if(that.options.debug == true){
+      $(that.debug_clusteringTimes).prepend("<b>"+desc+": </b>"+ that.debug_checktime()+"ms<br>");
+      that.debug_reset_timer();
+    }
+  }
+
+  that.debug_set_initial_time = function() {
+    var that = this;
+    if(that.options.debug == true){
+      $(that.debug_mainTimes).html("<b>First load: </b>"+ that.debug_checktime()+"ms");
+      that.debug_reset_timer();
+    }
+  }
+  
+  that.debug_getdate= function() {
+    return new Date().getTime() ;
+  }
+
+  that.debug_checktime = function() {
+    var that = this;
+    return that.debug_getdate() - that.debug_started_at;
+  }
+
+
+  // debug timer
+  that.debug_timer();
+  
   // first load ! 
   that.load_data();
 }
