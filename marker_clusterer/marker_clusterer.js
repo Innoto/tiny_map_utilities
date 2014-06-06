@@ -224,7 +224,7 @@ function  marker_clusterer( opts ) {
     }
   }
 
-
+  // filtering by cluster id. You must obtain the ids with find_by_id method
   that.fastfilter = function(filter_obj){
     /*
       // FILTER OBJECT STRUCTURE
@@ -250,9 +250,7 @@ function  marker_clusterer( opts ) {
       });
     }
     else { // filter list
-      $(filter_obj.enabled_list).each( function(i,e) {
-        that.options.filter_list.push( that.find_by_id(e) );
-      });
+      that.options.filter_list = filter_obj.enabled_list;
     }
 
 
