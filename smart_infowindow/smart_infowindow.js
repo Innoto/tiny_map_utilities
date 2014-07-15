@@ -11,11 +11,13 @@ function smart_infowindow(opts) {
 
   this.options = new Object({
     map : false,
-    map_scrollwhell_is_enabled: false,
+    box_id: false,
+    map_scrollwhell_is_enabled: true,
     background_color: '#fff',
     box_shadow: '0px 0px 9px #888',
     peak_image: false,
     max_height: 200,
+    border_height: 0,
     width: 200,
     allways_top: false, // when hover is locked, allways up direction
     corner_distance:30,
@@ -33,12 +35,17 @@ function smart_infowindow(opts) {
 
 smart_infowindow.prototype.onAdd = function() {
 
+  if(this.options.box_id)
+    var box_id=" id='"+this.options.box_id+"' ";
+  else
+    var box_id=" ";
+
   var div = document.createElement('div');
   $(div).addClass('smart_infowindow');
   $(div).css('display' , 'none');
   $(div).css('position' , 'absolute');
   $(div).html(  "<div class='top-space'></div>" +
-                "<div class='box'>" +
+                "<div class='box' " + box_id + ">" +
                   "<div class='innerbox' style='overflow:auto;'></div>" +
                 "</div>" +
                 "<div class='bottom-space'></div>"
@@ -150,7 +157,7 @@ smart_infowindow.prototype.SetStyles = function() {
   $(this.div_).css('width', this.options.width );
   $(this.div_).find('.box .innerbox').css('height', 'auto')
 
-  if( $(this.div_).height() > this.options.max_height ) {
+  if( $(this.div_).height()-this.options.border_height > this.options.max_height ) {
     $(this.div_).find('.box .innerbox').height(this.options.max_height)
   }
 

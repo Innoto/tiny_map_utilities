@@ -12,6 +12,7 @@ function  marker_clusterer( opts ) {
     json_data : false,
     data_structure: {id: 'id', lat: 'latitude', lng: 'longitude'},
     zoom_range : [10,19],
+    nocluster_zoom_range: [100,100],
     map : false,
     filter_list: {enabled_list: false, categories: []},
     show_disabled_points: true,
@@ -36,6 +37,11 @@ function  marker_clusterer( opts ) {
     debug: false
   });
 
+  // zoom ranges are compatible
+  if( that.options.zoom_range[1] > that.options.nocluster_zoom_range[0] ) {
+    console.log('Marker_clusterer.js: nocluster_zoom_range must be greater than zoom_range');
+  }
+
   $.extend(true, that.options, opts);
 
 
@@ -51,6 +57,9 @@ function  marker_clusterer( opts ) {
   that.cluster_array_tmp_keys = [];
   that.cluster_array = [];
 
+  that.nocluster_array = [];
+  that.nocluster_array_keys = [];
+  that.nocluster_disabled_array = [];
 
   that.markers = [];
   that.marker_categories = [];
@@ -164,7 +173,7 @@ function  marker_clusterer( opts ) {
 
   that.find_by_id = function( id ) {
     var real_id = false;
-    $(that.json_points).each( function(i, e) {
+    $.each( that.json_points, function(i, e) {
 
       e_id = eval("e." + that.options.data_structure.id); // know id dinamically
       if( id == e_id) {
@@ -186,7 +195,7 @@ function  marker_clusterer( opts ) {
       that.r_trees[zoomlevel] = rbush($(that.json_points).length, ['.lat', '.lng', '.lat', '.lng']);
     }
 
-    $(that.json_points).each(function(i,e){
+    $.each( that.json_points, function(i,e){
       for(zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
         var scale = Math.pow(2, zoomlevel);
         eval("pixels_latlng =  mapProjection.fromLatLngToPoint( new google.maps.LatLng(e."+that.options.data_structure.lat+", e."+that.options.data_structure.lng+") );");
@@ -207,7 +216,7 @@ function  marker_clusterer( opts ) {
 
       that.raw_cluster_array[zoomlevel] = [];
       that.raw_cluster_array_keys[zoomlevel] = [];
-      $( that.r_trees[zoomlevel].data.children ).each(function(i,e){
+      $.each( that.r_trees[zoomlevel].data.children, function(i,e){
 
         var result = that.r_trees[zoomlevel].search([ e.lat - that.options.cluster_radious, e.lng - that.options.cluster_radious, e.lat + that.options.cluster_radious, e.lng + that.options.cluster_radious]);
 
@@ -245,7 +254,7 @@ function  marker_clusterer( opts ) {
     that.marker_categories = filter_obj.categories;
 
     if(!filter_obj.enabled_list || typeof filter_obj.enabled_list == "undefined") { // all markers
-      $(that.json_points).each( function(i, e) {
+      $.each( that.json_points, function(i, e) {
           that.options.filter_list.push( i );
       });
     }
@@ -286,12 +295,12 @@ function  marker_clusterer( opts ) {
     that.marker_categories = filter_obj.categories;
 
     if(!filter_obj.enabled_list || typeof filter_obj.enabled_list == "undefined") { // all markers
-      $(that.json_points).each( function(i, e) {
+      $.each(that.json_points, function(i, e) {
           that.options.filter_list.push( i );
       });
     }
     else { // filter list
-      $(filter_obj.enabled_list).each( function(i,e) {
+      $.each( filter_obj.enabled_list, function(i,e) {
         that.options.filter_list.push( that.find_by_id(e) );
       });
     }
@@ -368,33 +377,33 @@ function  marker_clusterer( opts ) {
 
 
     // Make clusters
-      for( var zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
+    for( var zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
 
 
-        that.cluster_array[zoomlevel] = $.merge( [], that.exclude_hiden_categories(that.raw_cluster_array[zoomlevel]) );
-        that.cluster_array_tmp_keys[zoomlevel] = $.merge( [], that.exclude_hiden_categories(that.raw_cluster_array_keys[zoomlevel]) );
-        that.cluster_array_keys[zoomlevel] = [];
-        that.disabled_array_keys[zoomlevel] = [];
+      that.cluster_array[zoomlevel] = $.merge( [], that.exclude_hiden_categories(that.raw_cluster_array[zoomlevel]) );
+      that.cluster_array_tmp_keys[zoomlevel] = $.merge( [], that.exclude_hiden_categories(that.raw_cluster_array_keys[zoomlevel]) );
+      that.cluster_array_keys[zoomlevel] = [];
+      that.disabled_array_keys[zoomlevel] = [];
 
-        while(that.cluster_array_tmp_keys[zoomlevel].length > 0){
+      while(that.cluster_array_tmp_keys[zoomlevel].length > 0){
 
-          bc = that.biggest_cluster_index(that.cluster_array_tmp_keys[zoomlevel], that.cluster_array[zoomlevel]);
+        bc = that.biggest_cluster_index(that.cluster_array_tmp_keys[zoomlevel], that.cluster_array[zoomlevel]);
 
-          that.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
-          that.cluster_array_keys[zoomlevel].push(bc.index);
+        that.cluster_array_tmp_keys[zoomlevel].splice(bc.key_index , 1); // remove from key array
+        that.cluster_array_keys[zoomlevel].push(bc.index);
 
 
 
-          if(that.cluster_array[zoomlevel][bc.index].length == 1)
-            that.disabled_array_keys[zoomlevel].push(bc.index);
-          
+        if(that.cluster_array[zoomlevel][bc.index].length == 1)
+          that.disabled_array_keys[zoomlevel].push(bc.index);
+        
 
-          that.clean_clusters( zoomlevel , that.cluster_array[zoomlevel][bc.index] );
-
-        }
-
+        that.clean_clusters( zoomlevel , that.cluster_array[zoomlevel][bc.index] );
 
       }
+
+
+    }
   }
 
 
@@ -403,6 +412,8 @@ function  marker_clusterer( opts ) {
     var  bc;
     var that = this;
 
+    //nocluster list
+    that.nocluster_points();
 
     // apply filters or simply clone arrays
 
@@ -429,10 +440,6 @@ function  marker_clusterer( opts ) {
 
     }
 
-
-
-
-
     // Make clusters
     for( var zoomlevel = that.options.zoom_range[0]; zoomlevel<=that.options.zoom_range[1] ;zoomlevel++) {
 
@@ -454,7 +461,38 @@ function  marker_clusterer( opts ) {
 
 
 
+  that.nocluster_points = function() {
+    var that = this;
+    var point = false;
+    var points_enabled = false;
 
+    that.nocluster_array = [];
+    that.nocluster_array_keys = [];
+    that.nocluster_disabled_array = [];
+
+
+
+    if(typeof that.options.filter_list.enabled_list != "undefined") {
+      points_enabled = that.options.filter_list.enabled_list;
+    }
+    else {
+      points_enabled = that.options.filter_list;
+    }
+
+    $.each(that.options.json_data, function(i,e) {
+      eval('point = e.'+that.options.data_structure.id);
+
+      if( $.inArray( that.find_by_id(point) , points_enabled) !== -1 ) {
+        that.nocluster_array[i] = [i];
+        that.nocluster_array_keys.push( i );
+      }
+      else {
+        //that.nocluster_disabled_array.push(point);
+      }
+
+    });
+
+  }
 
 
   that.clean_clusters = function(zoom, cluster_to_compare) {
@@ -534,36 +572,35 @@ function  marker_clusterer( opts ) {
 
     google.maps.event.addListener(marker, 'click', function(){
       // set zoomlevels
-      zoomlevel = that.options.map.getZoom();
-      
-      if(zoomlevel > that.options.zoom_range[1])  
-        zoomlevel = that.options.zoom_range[1];
-      else
-      if(zoomlevel < that.options.zoom_range[0])  
-        zoomlevel = that.options.zoom_range[0];
+      var zoomlevel = that.get_zoomlevel();
 
       marker_click_return = [];
-      $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
-        marker_click_return.push(that.json_points[e]);
-      });
+      if(zoomlevel != -1) {
+        $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
+          marker_click_return.push(that.json_points[e]);
+        });
+      }
+      else {
+        marker_click_return.push( that.json_points[marker_id] );
+      }
 
       that.options.click_event(marker, marker_click_return);
     });
 
     google.maps.event.addListener(marker, 'mouseover', function(){
       // set zoomlevels
-      zoomlevel = that.options.map.getZoom();
-      
-      if(zoomlevel > that.options.zoom_range[1])  
-        zoomlevel = that.options.zoom_range[1];
-      else
-      if(zoomlevel < that.options.zoom_range[0])  
-        zoomlevel = that.options.zoom_range[0];
+      var zoomlevel = that.get_zoomlevel();
 
       marker_click_return = [];
-      $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
-        marker_click_return.push(that.json_points[e]);
-      });
+      if(zoomlevel != -1) {
+        $(that.cluster_array[zoomlevel][marker_id]).each( function(i,e) {
+          marker_click_return.push(that.json_points[e]);
+        });
+      }
+      else {
+        marker_click_return.push( that.json_points[marker_id] );
+      }
+
       that.options.hover_event(marker, marker_click_return);
     });
 
@@ -580,55 +617,65 @@ function  marker_clusterer( opts ) {
       return false;
 
 
-    var zoomlevel = that.options.map.getZoom();
-    
-
-
-    if(zoomlevel > that.options.zoom_range[1])  
-      zoomlevel = that.options.zoom_range[1];
-    else
-    if(zoomlevel < that.options.zoom_range[0])  
-      zoomlevel = that.options.zoom_range[0];
-
+    var zoomlevel = that.get_zoomlevel();
 
     // hide all markers
-    $(that.markers).each( function(i, e) {
+    $.each( that.markers, function(i, e) {
       e.setVisible(false);
     });
 
     $(that.cluster_markers).each( function(i, e) {
       e.setVisible(false);
     });
-
-
+  
     // disabled markers
     if(that.options.show_disabled_points == true){
-
-      $(that.disabled_array_keys[zoomlevel]).each(function(i,e){
+      $.each(that.disabled_array_keys[zoomlevel], function(i,e){
         //console.debug(that.cluster_array[zoomlevel][e])
         if(that.cluster_array[zoomlevel][e].length > 0) {
           that.markers[e].setIcon(that.icon_disabled);
           that.markers[e].setVisible(true);
         }
       });
+
+
     }
 
     // enabled markers
-    $(that.cluster_array_keys[zoomlevel]).each( function(i, e) {
-      that.choose_icon(e, zoomlevel);
-    });    
+    if(zoomlevel == -1){
+      var cluster_keys = that.nocluster_array_keys;
+      //console.log(cluster_keys.length);
+    }
+    else{
+      var cluster_keys = that.cluster_array_keys[zoomlevel];
+      //console.log(cluster_keys);
+    }
+    
+    $.each( cluster_keys, function(i, e) {
+        that.choose_icon(e, zoomlevel);
+    });
+    
   }
 
   that.choose_icon = function(id, zoomlevel){
     var that = this;
 
     var icon_category = '';
+    var cluster = false;
+
+    if(zoomlevel == -1) {
+      cluster = that.nocluster_array[id];
+    }
+    else {
+      cluster = that.cluster_array[zoomlevel][id];
+    }
 
     // sets icon category
-    $(that.marker_categories).each(function(i_category, category) {
+    $.each( that.marker_categories, function(i_category, category) {
       var coincidences = 0;
 
-      $( that.cluster_array[zoomlevel][id]).each(function(i,e){
+      $.each(cluster, function(i,e){
+
         eval("var search_id = that.json_data[e]."+ that.options.data_structure.id +";");
         if($.inArray(search_id, category.elements) != -1){
           coincidences++;
@@ -638,7 +685,7 @@ function  marker_clusterer( opts ) {
       });
 
 
-      if( category.important == true && coincidences > 0 || coincidences == that.cluster_array[zoomlevel][id].length ) 
+      if( category.important == true && coincidences > 0 || coincidences == cluster.length )
       {
         icon_category = category.id + '_';
         if(category.important == true)
@@ -647,21 +694,24 @@ function  marker_clusterer( opts ) {
 
     });
 
-    if( that.cluster_array[zoomlevel][id].length > 1 ){
-      if( that.cluster_array[zoomlevel][id].length > that.options.icon_big_elements ) {
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_big, anchor:that.icon_big.anchor}); // SMALL ICON 
+
+
+    if( cluster.length > 1 ){
+      if( cluster.length > that.options.icon_big_elements ) {
+      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_big, anchor:that.icon_big.anchor}); // SMALL ICON
       }
       else {
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_medium, anchor:that.icon_medium.anchor}); // SMALL ICON 
+      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_medium, anchor:that.icon_medium.anchor}); // SMALL ICON
       }
     }
     else{
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_small, anchor:that.icon_small.anchor}); // SMALL ICON 
+      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_small, anchor:that.icon_small.anchor}); // SMALL ICON
     }
 
     that.markers[id].setVisible(true);
-
   }
+
+
 
 
   that.hide_all_markers = function(id, zoomlevel){
@@ -680,6 +730,26 @@ function  marker_clusterer( opts ) {
     that.show_markers();
   }
 
+
+  that.get_zoomlevel = function() {
+
+    var zoomlevel = that.options.map.getZoom();
+
+    if(zoomlevel > that.options.zoom_range[1]) {
+      if(zoomlevel >= that.options.nocluster_zoom_range[0] && zoomlevel <= that.options.nocluster_zoom_range[1]) {
+        zoomlevel = -1;
+      }
+      else {
+        zoomlevel = that.options.zoom_range[1];
+      }
+    }
+    else
+    if(zoomlevel < that.options.zoom_range[0]) {
+      zoomlevel = that.options.zoom_range[0];
+    }
+
+    return zoomlevel;
+  }
 
   /***********************
    *    DEBUG SUB-CLASS
