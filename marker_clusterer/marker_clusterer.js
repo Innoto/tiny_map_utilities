@@ -1,12 +1,49 @@
 
 
 
-function  marker_clusterer( opts ) {
+function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disabled, marker_selected, opts ) {
   var that = this;
 
 
   // obtain paths
   var current_path = $('script[src$="/marker_clusterer.js"]').attr('src').replace("marker_clusterer.js", "");
+
+
+  that.marker_big = new Object({
+      anchor:[11,11], 
+      origin:[0,0], 
+      icon_path: current_path + "img/", 
+      icon_file: "point_big.png"
+  });
+
+  that.marker_medium = new Object( {
+      anchor: [10,10], 
+      origin:[0,0], 
+      icon_path: current_path + "img/", 
+      icon_file: "point_medium.png"
+  });
+
+  that.marker_small = new Object({
+      anchor:[6,6], 
+      origin:[0,0], 
+      icon_path: current_path + "img/", 
+      icon_file: "point_small.png"
+  });
+
+  that.marker_disabled = new Object({
+      anchor:[6,6], 
+      origin:[0,0], 
+      icon_path: current_path + "img/", 
+      icon_file: "point_disabled.png"      
+  });
+
+  that.marker_selected_icon = new Object({
+      anchor:[10,0], 
+      origin:[0,0], 
+      icon_path: current_path + "img/", 
+      icon_file: "point_selected.png" 
+  });
+
 
   that.options = new Object({
     json_data : false,
@@ -17,23 +54,10 @@ function  marker_clusterer( opts ) {
     filter_list: {enabled_list: false, categories: []},
     show_disabled_points: true,
     cluster_radious : 15, // in pixels
-
-    icon_path : current_path + "img/",
-    icon_big_elements: 6, // use this icon when cluster more than x elements
-    icon_big_diameter: 20,
-    icon_big: "point_big.png",
-    icon_medium_diameter: 15,
-    icon_medium: "point_medium.png", 
-    icon_small_diameter: 10,
-    icon_small: "point_small.png",
-    icon_disabled_diameter: 10,    
-    icon_disabled: "point_small_disabled.png",
-
+    marker_big_elements: 6, // use this icon when cluster more than x elements
     zIndex:10,
-
     hover_event: function(marker, data){},
     click_event: function(marker, data){},
-
     debug: false
   });
 
@@ -42,6 +66,14 @@ function  marker_clusterer( opts ) {
     console.log('Marker_clusterer.js: nocluster_zoom_range must be greater than zoom_range');
   }
 
+
+  // extend marker properties
+  $.extend(true, that.marker_big, marker_big);
+  $.extend(true, that.marker_medium, marker_medium);
+  $.extend(true, that.marker_small, marker_small);
+  $.extend(true, that.marker_disabled, marker_disabled);
+
+  // extend options
   $.extend(true, that.options, opts);
 
 
@@ -64,44 +96,7 @@ function  marker_clusterer( opts ) {
   that.markers = [];
   that.marker_categories = [];
   that.markers_are_hidden = false;
-  // ICONS
-
-  that.icon_disabled = { 
-        url: that.options.icon_path + that.options.icon_disabled, 
-        anchor: new google.maps.Point( 
-          that.options.icon_disabled_diameter/2-1, 
-          that.options.icon_disabled_diameter/2
-        ) 
-  };
-  that.icon_small = { 
-        url: that.options.icon_small, 
-        anchor: new google.maps.Point( 
-          that.options.icon_small_diameter/2-1, 
-          that.options.icon_small_diameter/2
-        )
-       /* origin: new google.maps.Point( 
-          this.options.icon_small_diameter/2, 
-          this.options.icon_small_diameter/2
-        ),*/
-
-  };
-  that.icon_medium = { 
-        url: that.options.icon_medium , 
-        anchor: new google.maps.Point( 
-          that.options.icon_medium_diameter/2-1, 
-          that.options.icon_medium_diameter/2
-        ) 
-  };
-  that.icon_big = { 
-        url: that.options.icon_big, 
-        anchor: new google.maps.Point( 
-          that.options.icon_big_diameter/2-1, 
-          that.options.icon_big_diameter/2
-        )
-  };
-  
-
-
+  that.marker_selected = false;
 
   // init
 /*  google.maps.event.addListenerOnce(this.options.map, 'idle', function( ){
@@ -184,6 +179,7 @@ function  marker_clusterer( opts ) {
 
     return real_id;
   };
+
 
   that.create_r_trees = function() {
     var that = this;
@@ -557,7 +553,6 @@ function  marker_clusterer( opts ) {
   //  Markers methods
   //
 
-
   that.add_marker = function( marker_id ) {
     var that = this;
     eval("var marker_latlng = new google.maps.LatLng( that.json_points[marker_id]."+that.options.data_structure.lat+", that.json_points[marker_id]."+that.options.data_structure.lng+" );");
@@ -633,11 +628,15 @@ function  marker_clusterer( opts ) {
       $.each(that.disabled_array_keys[zoomlevel], function(i,e){
         //console.debug(that.cluster_array[zoomlevel][e])
         if(that.cluster_array[zoomlevel][e].length > 0) {
-          that.markers[e].setIcon(that.icon_disabled);
+          that.markers[e].setIcon({
+            url: that.marker_disabled.icon_path + that.marker_disabled.icon_file , 
+            anchor: new google.maps.Point( that.marker_disabled.anchor[0] , that.marker_disabled.anchor[1] ),
+            origin: new google.maps.Point( that.marker_disabled.origin[0] , that.marker_disabled.origin[1] )
+          });
+
           that.markers[e].setVisible(true);
         }
       });
-
 
     }
 
@@ -654,13 +653,15 @@ function  marker_clusterer( opts ) {
     $.each( cluster_keys, function(i, e) {
         that.choose_icon(e, zoomlevel);
     });
+
+    that.marker_select();
     
   }
 
   that.choose_icon = function(id, zoomlevel){
     var that = this;
 
-    var icon_category = '';
+    var marker_category = '';
     var cluster = false;
 
     if(zoomlevel == -1) {
@@ -687,7 +688,7 @@ function  marker_clusterer( opts ) {
 
       if( category.important == true && coincidences > 0 || coincidences == cluster.length )
       {
-        icon_category = category.id + '_';
+        marker_category = category.id + '_';
         if(category.important == true)
           return false;
       }
@@ -695,17 +696,28 @@ function  marker_clusterer( opts ) {
     });
 
 
-
     if( cluster.length > 1 ){
-      if( cluster.length > that.options.icon_big_elements ) {
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_big, anchor:that.icon_big.anchor}); // SMALL ICON
+      if( cluster.length > that.marker_big_elements ) {
+        that.markers[id].setIcon( {
+          url:that.marker_big.icon_path + marker_category + that.marker_big.icon_file , 
+          anchor: new google.maps.Point( that.marker_big.anchor[0] , that.marker_big.anchor[1] ),
+          origin: new google.maps.Point( that.marker_big.origin[0] , that.marker_big.origin[1] )
+        }); // BIG ICON
       }
       else {
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_medium, anchor:that.icon_medium.anchor}); // SMALL ICON
+        that.markers[id].setIcon( {
+          url:that.marker_medium.icon_path + marker_category + that.marker_medium.icon_file , 
+          anchor: new google.maps.Point( that.marker_medium.anchor[0] , that.marker_medium.anchor[1] ),
+          origin: new google.maps.Point( that.marker_medium.origin[0] , that.marker_medium.origin[1] )
+        }); // MEDIUM ICON
       }
     }
     else{
-      that.markers[id].setIcon( {url:that.options.icon_path + icon_category + that.options.icon_small, anchor:that.icon_small.anchor}); // SMALL ICON
+      that.markers[id].setIcon( {
+        url:that.marker_small.icon_path + marker_category + that.marker_small.icon_file, 
+        anchor: new google.maps.Point( that.marker_small.anchor[0] , that.marker_small.anchor[1] ),
+        origin: new google.maps.Point( that.marker_small.origin[0] , that.marker_small.origin[1] )
+      }); // SMALL ICON
     }
 
     that.markers[id].setVisible(true);
@@ -730,6 +742,55 @@ function  marker_clusterer( opts ) {
     that.show_markers();
   }
 
+
+  that.marker_select = function(marker_id, new_icon) {
+
+
+
+    if( typeof marker_id != "undefined"  ) {
+      that.marker_unselect(); // new marker
+      that.marker_selected = parseInt( marker_id );
+    }
+
+    if( typeof new_icon != "undefined" ) {
+      that.marker_selected_icon = new_icon;
+    }
+
+
+    if( that.marker_selected ) {
+
+      var selected_array_id = that.find_by_id( that.marker_selected );
+      var zoomlevel = that.get_zoomlevel();
+
+      if( zoomlevel == -1 ) {
+        //that.markers[selected_array_id].setVisible(false);
+        that.markers[selected_array_id].setIcon( that.marker_selected_icon );
+        that.markers[selected_array_id].setVisible( true );
+      }
+      else {
+
+        $.each( that.cluster_array[zoomlevel], function(i,e){
+          if( $.inArray(selected_array_id, e ) != -1 ) {
+            
+            // hide marker father
+            that.markers[i].setVisible(false);
+
+            // show selected marker
+            that.markers[selected_array_id].setIcon( that.marker_selected_icon );
+            that.markers[selected_array_id].setVisible( true );
+          }
+        });
+
+      }
+
+    }
+
+  }
+
+  that.marker_unselect = function() {
+    that.marker_selected = false;
+    that.show_markers();
+  }
 
   that.get_zoomlevel = function() {
 
