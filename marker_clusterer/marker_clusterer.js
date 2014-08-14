@@ -10,17 +10,21 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
 
 
   that.marker_big = new Object({
-      anchor:[11,11] ,
+      anchor:[11,11], 
       origin:[0,0], 
       icon_path: current_path + "img/", 
-      icon_file: "point_big.png"
+      icon_file: "point_big.png",
+      drop_shadow: false,
+      shadow_icon_file: "point_big_shadow.png"
   });
 
   that.marker_medium = new Object( {
       anchor: [10,10], 
       origin:[0,0], 
       icon_path: current_path + "img/", 
-      icon_file: "point_medium.png"
+      icon_file: "point_medium.png",
+      drop_shadow: false,
+      shadow_icon_file: "point_medium_shadow.png"
   });
 
   that.marker_small = new Object({
@@ -28,20 +32,26 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
       origin:[0,0], 
       icon_path: current_path + "img/", 
       icon_file: "point_small.png"
+      drop_shadow: false,
+      shadow_icon_file: "point_small_shadow.png"
   });
 
   that.marker_disabled = new Object({
       anchor:[6,6], 
       origin:[0,0], 
       icon_path: current_path + "img/", 
-      icon_file: "point_disabled.png"      
+      icon_file: "point_disabled.png",
+      drop_shadow: false,
+      shadow_icon_file: "point_disabled_shadow.png"      
   });
 
   that.marker_selected_icon = new Object({
       anchor:[10,0], 
       origin:[0,0], 
       icon_path: current_path + "img/", 
-      icon_file: "point_selected.png" 
+      icon_file: "point_selected.png",
+      drop_shadow: false,
+      shadow_icon_file: "point_selected_shadow.png"      
   });
 
 
@@ -155,7 +165,6 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
     }
     else {
       that.json_data = new_json_data;
-
       that.json_points = [];
       $( that.json_data ).each( function(i,e) {
             that.json_points[i] = e;
@@ -628,11 +637,17 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
       $.each(that.disabled_array_keys[zoomlevel], function(i,e){
         //console.debug(that.cluster_array[zoomlevel][e])
         if(that.cluster_array[zoomlevel][e].length > 0) {
-          that.markers[e].setIcon({
+          var icon = {
             url: that.marker_disabled.icon_path + that.marker_disabled.icon_file , 
             anchor: new google.maps.Point( that.marker_disabled.anchor[0] , that.marker_disabled.anchor[1] ),
             origin: new google.maps.Point( that.marker_disabled.origin[0] , that.marker_disabled.origin[1] )
-          });
+          };
+
+          if( that.marker_disabled.drop_shadow ){
+            icon.shadow = that.marker_disabled.icon_path + that.marker_disabled.shadow_icon_file;
+          }
+
+          that.markers[e].setIcon( icon );
 
           that.markers[e].setVisible(true);
         }
@@ -698,26 +713,44 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
 
     if( cluster.length > 1 ){
       if( cluster.length > that.marker_big_elements ) {
-        that.markers[id].setIcon( {
+        var icon = {
           url:that.marker_big.icon_path + marker_category + that.marker_big.icon_file , 
           anchor: new google.maps.Point( that.marker_big.anchor[0] , that.marker_big.anchor[1] ),
           origin: new google.maps.Point( that.marker_big.origin[0] , that.marker_big.origin[1] )
-        }); // BIG ICON
+        };
+
+        if( that.marker_big.drop_shadow ){
+          icon.shadow = that.marker_big.icon_path + that.marker_big.shadow_icon_file;
+        }
+
+        that.markers[id].setIcon( icon ); // BIG ICON
       }
       else {
-        that.markers[id].setIcon( {
+        var icon = {
           url:that.marker_medium.icon_path + marker_category + that.marker_medium.icon_file , 
           anchor: new google.maps.Point( that.marker_medium.anchor[0] , that.marker_medium.anchor[1] ),
           origin: new google.maps.Point( that.marker_medium.origin[0] , that.marker_medium.origin[1] )
-        }); // MEDIUM ICON
+        };
+
+        if( that.marker_medium.drop_shadow ){
+          icon.shadow = that.marker_medium.icon_path + that.marker_medium.shadow_icon_file;
+        }
+
+        that.markers[id].setIcon( icon ); // MEDIUM ICON
       }
     }
     else{
-      that.markers[id].setIcon( {
+      var = icon {
         url:that.marker_small.icon_path + marker_category + that.marker_small.icon_file, 
         anchor: new google.maps.Point( that.marker_small.anchor[0] , that.marker_small.anchor[1] ),
         origin: new google.maps.Point( that.marker_small.origin[0] , that.marker_small.origin[1] )
-      }); // SMALL ICON
+      };
+
+      if( that.marker_small.drop_shadow ){
+        icon.shadow = that.marker_small.icon_path + that.marker_small.shadow_icon_file;
+      }      
+
+      that.markers[id].setIcon( icon ); // SMALL ICON
     }
 
     that.markers[id].setVisible(true);
