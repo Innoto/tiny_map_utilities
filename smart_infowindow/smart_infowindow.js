@@ -133,9 +133,12 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
     // lets open infowindow 
     this.close();
     this.SetContent(content);
-    this.SetStyles();
-    this.SetPosition(marker, click);
-    $(this.div_).show();
+    setTimeout(function () {
+      s_i_that.SetStyles();
+      s_i_that.SetPosition(marker, click);
+      $(s_i_that.div_).show();
+    }, 100);
+
   }
 
 };
