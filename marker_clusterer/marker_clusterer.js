@@ -31,7 +31,7 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
       anchor:[6,6], 
       origin:[0,0], 
       icon_path: current_path + "img/", 
-      icon_file: "point_small.png"
+      icon_file: "point_small.png",
       drop_shadow: false,
       shadow_icon_file: "point_small_shadow.png"
   });
@@ -740,8 +740,8 @@ function  marker_clusterer(marker_small, marker_medium, marker_big, marker_disab
       }
     }
     else{
-      var = icon {
-        url:that.marker_small.icon_path + marker_category + that.marker_small.icon_file, 
+      var icon = {
+        url: that.marker_small.icon_path + marker_category + that.marker_small.icon_file, 
         anchor: new google.maps.Point( that.marker_small.anchor[0] , that.marker_small.anchor[1] ),
         origin: new google.maps.Point( that.marker_small.origin[0] , that.marker_small.origin[1] )
       };
