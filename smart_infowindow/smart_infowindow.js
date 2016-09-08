@@ -6,15 +6,14 @@ smart_infowindow.prototype = new google.maps.OverlayView();
 /** @constructor */
 function smart_infowindow(opts) {
   var that = this;
-  
+
   // obtain paths
   if( $('script[src$="/smart_infowindow.js"]').length > 0 ){
     var current_path = $('script[src$="/smart_infowindow.js"]').attr('src').replace("smart_infowindow.js", "");
   }
   else {
-    var current_path = '/vendor/bower/tiny_map_utilities/smart_infowindow/img/';
+    var current_path = '/vendor/bower/tiny_map_utilities/smart_infowindow/';
   }
-
 
   this.options = new Object({
     map : false,
@@ -31,7 +30,8 @@ function smart_infowindow(opts) {
     marker_distance: [40,-10], // [top, bottom]
     peak_img: current_path + 'img/peak.png',
     peak_img_width: 13,
-    peak_img_height: 11
+    peak_img_height: 11,
+    onAddSuccess: function(){}
   });
   $.extend(true, this.options, opts);
 
@@ -42,7 +42,7 @@ function smart_infowindow(opts) {
 
 smart_infowindow.prototype.onAdd = function() {
   var that = this;
-  
+
 
   if(this.options.box_id)
     var box_id=" id='"+this.options.box_id+"' ";
@@ -70,16 +70,16 @@ smart_infowindow.prototype.onAdd = function() {
   google.maps.event.addDomListener(this.div_, 'mousedown', function(e){if (e.stopPropagation) e.stopPropagation();});   // cancels drag/click
   google.maps.event.addDomListener(this.div_, 'click', function(e){if (e.stopPropagation) e.stopPropagation();});      // cancels click
   google.maps.event.addDomListener(this.div_, 'dblclick', function(e){if (e.stopPropagation) e.stopPropagation();});    // cancels double click
-  google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
-  google.maps.event.addDomListener(this.div_, 'mouseout', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
-  google.maps.event.addDomListener(this.div_, 'mouseleave', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click 
+  google.maps.event.addDomListener(this.div_, 'contextmenu', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click
+  google.maps.event.addDomListener(this.div_, 'mouseout', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click
+  google.maps.event.addDomListener(this.div_, 'mouseleave', function(e){if (e.stopPropagation) e.stopPropagation();}); // cancels double right click
 
 
   that = this;
 
   //
   // Here disable wheel zoom into infobox, create too the variable "is_on_infowindow", that makes
-  
+
   is_on_infowindow = false;
 
   // enter on infowindow and set true
@@ -87,7 +87,7 @@ smart_infowindow.prototype.onAdd = function() {
     is_on_infowindow = true;
     that.options.map.setOptions({scrollwheel: false});
   });
-  
+
   click_event_opened = false;
 
   // exit infowindow and set false
@@ -102,6 +102,7 @@ smart_infowindow.prototype.onAdd = function() {
   //  when change zoom close infowindow
   google.maps.event.addListener(this.options.map, 'zoom_changed', function(){that.close()});
 
+  that.options.onAddSuccess();
 };
 
 smart_infowindow.prototype.draw = function() {
@@ -142,7 +143,7 @@ smart_infowindow.prototype.open = function( marker, evento, content ) {
 
 
   if( is_on_infowindow == false) {
-    // lets open infowindow 
+    // lets open infowindow
     this.close();
     this.SetContent(content);
     setTimeout(function () {
@@ -167,7 +168,7 @@ smart_infowindow.prototype.close = function( ) {
 //
 smart_infowindow.prototype.SetStyles = function() {
   var that = this;
-  
+
   $(this.div_).find('.box').css('box-shadow', this.options.box_shadow );
   $(this.div_).find('.box').css('background-color', this.options.background_color );
 //  $(this.div_).find('.box .innerbox').css('padding', '5px');
@@ -187,7 +188,7 @@ smart_infowindow.prototype.SetStyles = function() {
 
 smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var that = this;
-  
+
   var overlayProjection = this.getProjection();
   var canvas_marker_point = overlayProjection.fromLatLngToDivPixel( marker.getPosition() );
   var bounds = this.options.map.getBounds();
@@ -224,7 +225,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   var peak_h = 0;
 
   // decide Y position
-  if( 
+  if(
       this.options.allways_top == true || // hover is locked, allways up direction
       enought_top_space || // have enought space
       !enought_bottom_space ||
@@ -241,7 +242,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   }
 
   // decide X position
-  if( 
+  if(
     (enought_right_space && enought_left_space) ||
     click_ev == true  // is a click event
   ){
@@ -266,31 +267,31 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
   // center map when is a click event
   if(click_ev == true) {
     if(!enought_top_space) {
-      this.options.map.setCenter( 
+      this.options.map.setCenter(
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x , 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x ,
             overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y - $(this.div_).height()
           )
         )
       );
     }
     if(!enought_right_space) {
-      this.options.map.setCenter( 
+      this.options.map.setCenter(
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x + $(this.div_).width()/1.5 , 
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x + $(this.div_).width()/1.5 ,
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y
           )
         )
       );
     }
     if(!enought_left_space) {
-      this.options.map.setCenter( 
+      this.options.map.setCenter(
         overlayProjection.fromContainerPixelToLatLng(
           new google.maps.Point(
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x - $(this.div_).width()/1.5 , 
-            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y 
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).x - $(this.div_).width()/1.5 ,
+            overlayProjection.fromLatLngToDivPixel( marker.getPosition() ).y
           )
         )
       );
@@ -306,7 +307,7 @@ smart_infowindow.prototype.SetPosition = function( marker, click_ev ) {
 
 smart_infowindow.prototype.SetPeak = function(v, h) {
   var that = this;
-  
+
 
   var peak_img = document.createElement('img');
   $(peak_img).attr('src', this.options.peak_img);
@@ -332,7 +333,7 @@ smart_infowindow.prototype.SetPeak = function(v, h) {
   if( h == -1 ){
     var peak_margin_left = this.options.width - this.options.corner_distance - this.options.peak_img_width/2;
   }
-  else 
+  else
   if( h == 1)
   {
     var peak_margin_left = this.options.corner_distance - this.options.peak_img_width/2;
@@ -356,7 +357,7 @@ smart_infowindow.prototype.SetContent = function(content) {
 
 // @distances_array : [top, bottom]
 smart_infowindow.prototype.SetMarkerDistances = function( marker_distance ) {
-  this.options.marker_distance = marker_distance; 
+  this.options.marker_distance = marker_distance;
 };
 
 smart_infowindow.prototype.SetWidth = function( width ) {
