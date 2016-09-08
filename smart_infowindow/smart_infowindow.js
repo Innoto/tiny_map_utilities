@@ -8,7 +8,13 @@ function smart_infowindow(opts) {
   var that = this;
   
   // obtain paths
-  var current_path = $('script[src$="/smart_infowindow.js"]').attr('src').replace("smart_infowindow.js", "");
+  if( $('script[src$="/smart_infowindow.js"]').length > 0 ){
+    var current_path = $('script[src$="/smart_infowindow.js"]').attr('src').replace("smart_infowindow.js", "");
+  }
+  else {
+    var current_path = '/vendor/bower/tiny_map_utilities/smart_infowindow/img/';
+  }
+
 
   this.options = new Object({
     map : false,
