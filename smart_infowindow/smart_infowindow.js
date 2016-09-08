@@ -78,23 +78,24 @@ smart_infowindow.prototype.onAdd = function() {
   that = this;
 
   //
-  // Here disable wheel zoom into infobox, create too the variable "is_on_infowindow", that makes
+  // Here disable wheel zoom into infobox, create too the variable "smart_infowindow_is_on_infowindow", that makes
 
-  is_on_infowindow = false;
+  smart_infowindow_is_on_infowindow = false;
 
   // enter on infowindow and set true
   $(that.div_).bind('mouseenter', function(){
-    is_on_infowindow = true;
+    smart_infowindow_is_on_infowindow = true;
     that.options.map.setOptions({scrollwheel: false});
   });
 
-  click_event_opened = false;
+  smart_infowindow_click_event_opened = false;
 
   // exit infowindow and set false
   $(that.div_).bind('mouseleave',function(){
     that.options.map.setOptions({scrollwheel: that.options.map_scrollwhell_is_enabled});
-    is_on_infowindow = false;
-    if(click_event_opened == false)
+
+    smart_infowindow_is_on_infowindow = false;
+    if(smart_infowindow_click_event_opened == false)
       that.close();
   });
 
@@ -118,31 +119,34 @@ smart_infowindow.prototype.MarkerEvent = function(marker, evento, content) {
   });
 }
 
-smart_infowindow.prototype.open = function( marker, evento, content ) {
+smart_infowindow.prototype.open = function( marker, evento, content, force_keep_open ) {
   var that = this;
 
   var click = false
 
   if(evento === 'click' ) {
-    click_event_opened = true;
+    smart_infowindow_click_event_opened = true;
     var click = true;
     // if click on map check if is mouse is now on infowindow
-    map_click_event = google.maps.event.addListenerOnce(that.options.map, 'click', function(){
-      that.close();
-      click_event_opened = false;
-    });
+    if( force_keep_open != true ) {
+      map_click_event = google.maps.event.addListenerOnce(that.options.map, 'click', function(){
+        that.close();
+        smart_infowindow_click_event_opened = false;
+      });
+    }
   }
   else
   if(evento === 'mouseover' ) {
-
-    marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
-      if(is_on_infowindow == false )
-        that.close();
-    });
+    if( force_keep_open != true ) {
+      marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
+        if(smart_infowindow_is_on_infowindow == false )
+          that.close();
+      });
+    }
   }
 
 
-  if( is_on_infowindow == false) {
+  if( smart_infowindow_is_on_infowindow == false) {
     // lets open infowindow
     this.close();
     this.SetContent(content);
