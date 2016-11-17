@@ -31,6 +31,7 @@ function smart_infowindow(opts) {
     peak_img: current_path + 'img/peak.png',
     peak_img_width: 13,
     peak_img_height: 11,
+    keep_open: true,
     onAddSuccess: function(){}
   });
   $.extend(true, this.options, opts);
@@ -137,14 +138,14 @@ smart_infowindow.prototype.open = function( marker, evento, content, force_keep_
   }
   else
   if(evento === 'mouseover' ) {
-    if( force_keep_open != true ) {
+    //if( force_keep_open != true ) {
+    if( that.options.keep_open == false ) {
       marker_mouseout_event = google.maps.event.addListenerOnce(marker, 'mouseout', function(){
         if(smart_infowindow_is_on_infowindow == false )
           that.close();
       });
     }
   }
-
 
   if( smart_infowindow_is_on_infowindow == false) {
     // lets open infowindow
