@@ -83,22 +83,24 @@ smart_infowindow.prototype.onAdd = function() {
 
   smart_infowindow_is_on_infowindow = false;
 
-  // enter on infowindow and set true
-  $(that.div_).bind('mouseenter', function(){
-    smart_infowindow_is_on_infowindow = true;
-    that.options.map.setOptions({scrollwheel: false});
-  });
+  if( that.options.keep_open === true) {
+    // enter on infowindow and set true
+    $(that.div_).bind('mouseenter', function(){
+      smart_infowindow_is_on_infowindow = true;
+      that.options.map.setOptions({scrollwheel: false});
+    });
 
-  smart_infowindow_click_event_opened = false;
+    smart_infowindow_click_event_opened = false;
 
-  // exit infowindow and set false
-  $(that.div_).bind('mouseleave',function(){
-    that.options.map.setOptions({scrollwheel: that.options.map_scrollwhell_is_enabled});
+    // exit infowindow and set false
+    $(that.div_).bind('mouseleave',function(){
+      that.options.map.setOptions({scrollwheel: that.options.map_scrollwhell_is_enabled});
 
-    smart_infowindow_is_on_infowindow = false;
-    if(smart_infowindow_click_event_opened == false)
-      that.close();
-  });
+      smart_infowindow_is_on_infowindow = false;
+      if(smart_infowindow_click_event_opened == false)
+        that.close();
+    });
+}
 
   //
   //  when change zoom close infowindow
