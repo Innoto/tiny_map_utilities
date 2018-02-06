@@ -1,0 +1,12 @@
+{
+  "name": "tiny_map_utilities",
+  "version": "1.0.0",
+  "description": "Google maps v3 api utilities. Fast clusterer based in r-bush . For gmaps api v3",
+  "main": "smart_infowindow/smart_infowindow.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Innoto/tiny_map_utilities.git"
+  },
+  "author": "Innoto",
+  "license": "GPL-3.0-only"
+}
